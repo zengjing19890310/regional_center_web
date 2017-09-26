@@ -1,0 +1,713 @@
+<style>
+    .fixed_top{
+        position: fixed;
+        background-color: #ffffff;
+        z-index:99999;
+        top: 83px;
+        left: 200px;
+        box-shadow: 0 2px 2px #cfd0d3;
+    }
+    div.time_component{
+        height:30px;
+    }
+    div.content div.title.header{
+        position: relative;
+    }
+    div.content div.title.header span{
+        position: relative;
+    }
+    div.title.header{
+        position: relative;
+    }
+    div.title.header .bottom_line{
+        position: absolute;
+        bottom:3px;
+        left:15px;
+        right:15px;
+        height:0;
+        border-top:1px solid #e3e3e3;
+    }
+
+    .compare_museum_list{
+        position: relative;
+        display: inline-block;
+        top:0;
+        left:15px;
+    }
+    .compare_museum_list:after{
+        display: block;
+        content:'';
+        clear: both;
+    }
+    .compare_museum_list>div{
+        position: relative;
+    }
+    div.content div.title.header span.add_icon{
+        display: inline-block;
+        width:26px;
+        height:26px;
+        position: relative;
+        top:8px;
+        right:-20px;
+        background: url(__uri("/regional_center/images/icons.png")) no-repeat 0 -280px;
+        cursor:pointer;
+    }
+    .compare_museum_list .museum_list{
+        width:260px;
+        min-height:150px;
+        max-height:250px;
+        /*overflow-y: scroll;*/
+        position:absolute;
+        top:0;
+        left:35px;
+        padding:10px 20px 10px 20px;
+        background: #fff;
+        z-index:100000;
+        border-radius:5px;
+        box-shadow: -1px 1px 3px 1px #ccc;
+        cursor:default;
+    }
+    .compare_museum_list .museum_list ul{
+        margin: 10px 0 0 0;
+        min-height:160px;
+        max-height:160px;
+        overflow-y: scroll;
+        background:url(__uri("/regional_center/images/loading.gif")) no-repeat center center;
+    }
+    .compare_museum_list div b{
+        box-sizing: content-box;
+        font-size: 14px;
+        color:#3b404f;
+        font-weight: normal;
+        display: inline-block;
+        height:30px;
+        line-height: 30px;
+        padding:0 40px 0 20px;
+        cursor:pointer;
+        background-color:#bcc6ef;
+        border-radius: 15px;
+        position: relative;
+    }
+    .compare_museum_list div b:not(:last-child){
+        margin-right:5px;
+    }
+    .compare_museum_list div b:hover{
+        background-color: #7b7de5;
+        color: #ffffff;
+    }
+    .compare_museum_list div b i.close_icon{
+        display: inline-block;
+        width:10px;
+        height:10px;
+        position: absolute;
+        right:10px;
+        top:10px;
+        background:url(__uri("/regional_center/images/icons.png")) no-repeat -67px -74px;
+    }
+    .compare_museum_list div b:hover i.close_icon{
+        background-position: -57px -74px;
+    }
+    .condition li.choose{
+        position: relative;
+        padding:10px 0;
+    }
+    .condition span{
+        font-size: 1rem;
+        line-height:30px;
+    }
+    .sel_env_params:after,.sel_env_params .sel_env:after,.sel_env_params .sel_params:after{
+        content:'';
+        display: block;
+        clear:both;
+    }
+    div.sel_time,div.sel_env,div.sel_params{
+        padding:10px 0;
+    }
+    span.reset_condition{
+        color:#bdc2ce;
+        cursor:pointer;
+    }
+    span.reset_condition:hover{
+        text-decoration: underline;
+    }
+    span.all_params{
+        padding:0 10px 0 0;
+        cursor:pointer;
+    }
+    span.all_params:hover{
+        text-decoration: underline;
+    }
+    #condition_list{
+        display: none;
+        margin-bottom:10px;
+    }
+    div.arrow_icon i.arrow{
+        display: inline-block;
+        height:10px;
+        width:20px;
+        margin-left: 10px;
+        transition: all linear .15s;
+        position: relative;
+        background: url(__uri("/regional_center/images/icons.png")) no-repeat -137px 0;
+    }
+    div.arrow_icon i.arrow.up{
+        transform:rotate(180deg);
+        left:-1px;
+    }
+    div.arrow_icon{
+        font-size: 16px;
+        color:#878da1;
+        position:absolute;
+        right:30px;
+        top:15px;
+        padding-left: 25px;
+        height:20px;
+        line-height: 20px;
+        background: url(__uri("/regional_center/images/icons.png")) no-repeat -576px -576px;
+    }
+    div.arrow_icon:hover{
+        cursor:pointer;
+    }
+    /*按钮组样式调整*/
+    .ui.buttons .ui.button {
+        font-weight: 400;
+        font-size: 1rem;
+        background-color:#fff;
+        border:1px solid #9a9ea2;
+        color:#3b404f;
+    }
+    .sel_env .ui.buttons .ui.button:not(:first-child){
+        border-left: none;
+    }
+    .ui.buttons .ui.button:hover,.ui.buttons .ui.button.active{
+        color:#fff;
+        background-color: #7b7de5;
+        border-color:#7b7de5;
+    }
+    div.sel_params{
+        margin-left: 30px;
+    }
+    div.sel_params .ui.buttons .ui.button:hover{
+        color:#fff;
+        background-color: #7b7de5;
+        border-color:#7b7de5;
+    }
+    .title_label{
+        padding:0 20px 0 10px;
+    }
+    .title_label span{
+        font-size: 16px;
+        color:#9196a8;
+        white-space:nowrap;
+    }
+    div.sel_condition div.lf:not(:last-child){
+        margin-right:10px;
+    }
+    div.sel_condition:after{
+        display: block;
+        content:'';
+        clear:both;
+    }
+    li.choose:after{
+        content:'';
+        display: block;
+        clear: both;
+    }
+    li.choose b{
+        box-sizing: content-box;
+        font-size: 14px;
+        color:#3b404f;
+        font-weight: normal;
+        display: inline-block;
+        padding:8px 40px 8px 20px;
+        cursor:pointer;
+        background-color:#bcc6ef;
+        border-radius: 15px;
+        position: relative;
+    }
+    li.choose b:hover{
+        background-color:#7b7de5;
+        color:#ffffff;
+    }
+    li.choose b:hover i.close_icon{
+        background-position: -57px -74px;
+    }
+    i.close_icon{
+        display: inline-block;
+        width:10px;
+        height:10px;
+        position: absolute;
+        right:10px;
+        top:10px;
+        background:url(__uri("/regional_center/images/icons.png")) no-repeat -67px -74px;
+    }
+    .ui.button{
+        height:30px;
+        line-height: 30px;
+        width:60px;
+        text-align: center;
+        padding:0;
+        color:#484d5b;
+        font-family: "微软雅黑";
+    }
+    .ui.buttons.params span{
+        position:relative;
+    }
+    .ui.buttons.params .ui.button{
+        border-radius:14px;
+    }
+    .ui.buttons.params>span .multiple_icon{
+        width:19px;
+        height:19px;
+        position:absolute;
+        background:url(__uri("/regional_center/images/icons.png")) no-repeat -3px -105px;
+        top:-10px;
+        right:0;
+    }
+    .ui.buttons.params.lf .ui.button.active{
+        color:#3b404f;
+        background-color:#bcc6ef;
+        border-color:#bcc6ef;
+    }
+    .ui.buttons.params.lf .ui.button.active:hover{
+        color:#fff;
+        background-color: #7b7de5;
+        border-color:#7b7de5;
+    }
+    .sel_time{
+        position: relative;
+    }
+    .ui.button.compare_with_time{
+        display: inline-block;
+        width:80px;
+        position: absolute;
+        white-space: nowrap;
+        top:10px;
+        left:550px;
+        color: #3b404f;
+        font-size: 1rem;
+        font-weight: normal;
+        padding: 0;
+        margin:0;
+        height: 30px;
+        border: 1px solid #9a9ea2;
+        line-height: 30px;
+        text-align: center;
+        cursor: pointer;
+        background-color: #fff;
+        /* border-radius: 5px; */
+    }
+    .ui.button.compare_with_time:hover,.ui.button.compare_with_time.active{
+        color: #ffffff;
+        background-color: #7b7de5;
+        border-color: #7b7de5;
+    }
+    .ui.checkbox label{
+        font-size: 14px;
+        color:#484d5e;
+        font-weight: normal;
+        cursor:pointer;
+    }
+
+    div.content div.title.header .add_icon .museum_list>div{
+        text-align: center;
+    }
+    div.content div.title.header .add_icon .museum_list>div span.ok{
+        display: inline-block;
+        width:100px;
+        height:30px;
+        line-height: 30px;
+        text-align: center;
+        margin:0 auto;
+        color:#fff;
+        border-radius:15px;
+        background-color:#6a6cd1;
+        font-size: 14px;
+        cursor:pointer;
+    }
+    div.content div.title.header .add_icon .museum_list li{
+        line-height: 36px;
+    }
+</style>
+<template id="fixed_top">
+    <div class="fixed_top" @click.stop>
+        <div class="title header" v-show="module_name=='compare'">
+            <span>对比分析</span>
+            <div class="compare_museum_list">
+                <div>
+                    <b v-for="item in compare_list" @click="un_sel_museum(item)">
+                        {{item.museum_name}}
+                        <i class="close_icon"></i>
+                    </b>
+                    <span class="add_icon" @click="toggle_museum_list">
+                        <div class="museum_list" v-show="show_museum_list">
+                            <p style="color:#f57c7c;font-size: 12px;text-align: center" @click.stop>*您最多可以选择3家博物馆进行对比!</p>
+                            <ul @click.stop>
+                                <li @click.stop v-for="data in museum_list">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" :id="'mid_'+data.id" v-model="compare_museum_mids" :value="data.id">
+                                        <label :for="'mid_'+data.id">{{data.name}}</label>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div @click.stop>
+                                <span class="ok" @click="change_museum_list">确定</span>
+                            </div>
+                        </div>
+                    </span>
+                </div>
+            </div>
+            <div class="bottom_line"></div>
+        </div>
+        <div class="condition">
+            <ul>
+                <li class="choose" @click="slide_condition">
+                    <div class="title_label lf">
+                        <span>筛选条件</span>
+                    </div>
+                    <div class="sel_condition">
+                        <div class="lf">
+                            <b v-show="sel_time!=''&&!compare_with_time" @click.stop="cancel_time()">{{time_show}}
+                                <!--<i class="close_icon"></i>-->
+                            </b>
+                            <b v-show="sel_time!=''&&compare_with_time" >{{btime}},{{etime}}
+                                <!--<i class="close_icon"></i>-->
+                            </b>
+                        </div>
+                        <div class="lf">
+                            <b v-show="sel_env!=''" @click.stop="cancel_env()">{{env_list[sel_env]}}
+                                <!--<i class="close_icon"></i>-->
+                            </b>
+                        </div>
+                        <div class="lf">
+                            <b v-for="item in sel_params" v-show="sel_params&&sel_params.length!=0" @click.stop="cancel_params(item)">{{params_list[item]}}
+                                <i class="close_icon" v-show="sel_params.length>1"></i>
+                            </b>
+                        </div>
+                        <div class="lf">
+                            <span v-show="(sel_time!='')&&(sel_env!='')&&(sel_params&&sel_params.length!=0)" @click.stop="reset_condition" class="reset_condition">恢复默认</span>
+                        </div>
+                    </div>
+                    <div class="arrow_icon">
+                        更多选择<i class="arrow" :class="{'down':!condition_show,'up':condition_show}"></i>
+                    </div>
+                </li>
+                <li id="condition_list">
+                    <div class="sel_time">
+                        <div class="title_label lf">
+                            <span>选择时间</span>
+                        </div>
+                        <div class="time_component">
+                            <time-box :time.sync="sel_time" v-show="!compare_with_time"></time-box>
+                            <div  v-show="compare_with_time">
+                                <input placeholder="请输入日期" id="start_time" class="laydate-icon" @click.stop="laydate('btime')" v-model="btime">
+                                <input placeholder="请输入日期" id="end_time" class="laydate-icon" @click.stop="laydate('etime')" v-model="etime">
+                                <span class="ui button compare_with_time">按时间对比</span>
+                            </div>
+                            <span class="ui button compare_with_time" v-show="compare_with_time_enable" @click="toggle_compare_type" :class="{'active':compare_with_time}">按时间对比</span>
+                        </div>
+                    </div>
+                    <div class="sel_env_params">
+                        <div class="sel_env lf">
+                            <div class="title_label lf">
+                                <span>环境类型</span>
+                            </div>
+                            <div class="ui buttons lf">
+                                <span class="ui button" v-for="(key,data) in env_list" @click="toggle_env(key)" :class="{'active':sel_env==key}">{{data}}</span>
+                            </div>
+                        </div>
+                        <div class="sel_params lf">
+                            <div class="title_label lf">
+                                <span>环境参数</span>
+                            </div>
+                            <div class="ui buttons params lf">
+                                <span class="all_params" :class="{'active':sel_params.indexOf('all')!=-1||sel_params.length==params_list.length}" @click="toggle_all_params">全选</span>
+                                <span class="ui button" @click="toggle_params(key)" :class="{'active':sel_params.indexOf(key)!=-1||sel_params.indexOf('all')!=-1}" v-for="(key,data) in params_list">{{data}}<i class="multiple_icon" v-show="sel_params.indexOf(key)!=-1||sel_params.indexOf('all')!=-1"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</template>
+<script>
+    var env_list={
+        cabinet:'展柜',
+        hall:'展厅',
+        storeroom:'库房'
+    };
+    var params_list={
+        temperature:'温度',
+        humidity:'湿度',
+        light:'光照',
+        uv:'紫外',
+        voc:'VOC'
+    };
+
+    Vue.component('fixed-top',{
+        template:'#fixed_top',
+        data:function(){
+            return {
+                env_list:env_list,
+                sel_env:'cabinet',//环境为单选,默认显示展厅
+                params_list:params_list,
+                sel_params:['temperature','humidity'],//参数为多选,默认显示温湿度
+                sel_time:'yesterday',//选定的时间,默认显示昨天
+                time_show:'',
+                msg:'区域详情',
+                condition_show:false,
+                show_museum_list:false,
+                museum_list:[],
+                compare_museum_mids:[],
+                compare_with_time:false,
+                btime:'',
+                etime:'',
+                new_compare_list:[]
+            }
+        },
+        created:function(){
+            if(this.module_name=='compare'&&this.compare_list.length<3){
+                this.get_museum_list_data();
+            }
+            this.$dispatch('init_page',this.sel_env,this.sel_time,this.sel_params);
+        },
+        watch:{
+            compare_museum_mids:function(value){
+                if(!this.compare_with_time){
+                    if(value.length>3){//如果新数组的长度大于3
+                        value.pop();
+                        this.$dispatch('too_much_num');
+                    }else{
+                        this.check_uncheck_museum(value);
+                    }
+                }else if(this.compare_with_time){
+                    if(value.length>1){
+                        value.pop();
+                        this.$dispatch('one_can_compare_with_time');
+                    }else{
+                        this.check_uncheck_museum(value);
+                    }
+                }
+            }
+        },
+        ready:function(){
+            this.get_users_behavior();
+            var WIDTH = document.body.clientWidth;
+            $('.fixed_top').css('width',WIDTH-200+'px');
+            $(window).resize(function(){
+                var content_width = document.body.clientWidth;
+                $('.fixed_top').css('width',content_width-200+'px');
+            });
+            this.time_show = time_info(this.sel_time);
+        },
+        methods:{
+            check_uncheck_museum:function(value){
+                var me = this;
+                this.new_compare_list = [];
+                if(me.compare_list&&(value.length<me.compare_list.length)){//新数组比原数组短,取消某个项目
+                    if(value&&value.length!=0){
+                        $.each(value,function(i,n){//反选
+                            if(me.compare_list&&me.compare_list.length!=0){
+                                $.each(me.compare_list,function(j,v){
+                                    if(n== v.mid){
+                                        me.new_compare_list.push(v);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }else{//新数组比原数组长,新增某个项目
+                    if(value&&value.length!=0){
+                        $.each(value,function(i,n){//反选
+                            if(me.museum_list&&me.museum_list.length!=0){
+                                $.each(me.museum_list,function(j,v){
+                                    if(n== v.id){
+                                        me.new_compare_list.push({
+                                            mid: v.id,
+                                            museum_name: v.name
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            },
+            toggle_compare_type:function(){//按时间对比激活
+                if(this.compare_museum_mids.length==1){
+                    if(!this.btime){
+                        this.btime = laydate.now(-2);
+                    }
+                    if(!this.etime){
+                        this.etime = laydate.now(-1);
+                    }
+                    this.compare_with_time = !this.compare_with_time;
+                    if(this.compare_with_time){
+                        //初次加载
+                        this.$dispatch('toggle_compare_type',this.compare_with_time,this.btime,this.etime);
+                    }else{
+                        this.$dispatch('toggle_compare_type',this.compare_with_time,this.btime,this.etime,this.sel_env,this.sel_time,this.sel_params);
+                    }
+                }else{
+                    this.$dispatch('one_can_compare_with_time');
+                }
+            },
+            laydate:function(type){
+                var me = this;
+                laydate({
+                    max: laydate.now(-1),//控制最晚时间为昨天
+                    choose:function(dates){
+                        if(type=='btime'){
+                            me.btime=dates;
+                        }else if(type=='etime'){
+                            me.etime=dates;
+                        }
+                        if(me.btime!=me.etime){
+                            if(me.compare_with_time){
+                                me.$dispatch('toggle_compare_type',me.compare_with_time,me.btime,me.etime);
+                            }
+                        }else{
+                            me.$dispatch('the_same_time_error');
+                        }
+                    },
+                    isclear: false, //是否显示清空
+                    istoday: false, //是否显示今天
+                    issure: false, //是否显示确认
+                });
+            },
+            get_museum_list_data:function(){
+                var me = this;
+                $.get(API('/base/museum/generality/all_museum'),function(data){
+                    //加载全部博物馆列表
+                    me.museum_list = data;
+                    me.compare_museum_mids = [];
+                    if(me.compare_list&&me.compare_list.length!=0){
+                        $.each(me.compare_list,function(i,n){
+                            me.compare_museum_mids.push(n.mid);
+                        });
+                    }
+                    $('.compare_museum_list .museum_list ul').css('background','none');
+                });
+            },
+            toggle_museum_list:function(){
+                this.show_museum_list = !this.show_museum_list;
+            },
+            change_museum_list:function(){
+                this.compare_list = this.new_compare_list;
+                this.$dispatch('change_compare_list');
+                this.show_museum_list=false;
+            },
+            get_users_behavior:function(){
+                $.get(API('/base/users/behavior'),function(data){
+                    //将用户行为保存到本地
+                    window.localStorage.setItem('users_behavior',JSON.stringify(data));
+                });
+            },
+            toggle_env:function(key){
+                this.sel_env = key;
+                this.change_condition();
+            },
+            toggle_params:function(key){
+                if(this.sel_params.indexOf(key)==-1){
+                    this.sel_params.push(key);
+                    this.change_condition();
+                }else{
+                    if(this.sel_params.length>1){
+                        var idx = this.sel_params.indexOf(key);
+                        this.sel_params.splice(idx,1);
+                        this.$dispatch('reduce_params',key);
+                    }else{
+                        this.$dispatch('only_one_param');
+                        return;
+                    }
+                }
+            },
+            toggle_all_params:function(){
+                var me = this;
+                if(!this.sel_all){
+                    $.each(this.params_list,function(i,n){
+                        if(me.sel_params.indexOf(i)==-1){
+                            me.sel_params.push(i);
+                        }
+                    });
+                }
+                this.change_condition();
+            },
+            cancel_time:function(){
+//                this.sel_time='';
+            },
+            cancel_env:function(){
+//                this.sel_env='';
+            },
+            cancel_params:function(key){
+                if(this.sel_params.length>1){
+                    var idx=this.sel_params.indexOf(key);
+                    if(idx!=-1){
+                        this.sel_params.splice(idx,1);
+                        this.$dispatch('reduce_params',key);
+                    }
+                }
+            },
+            slide_condition:function(){
+                this.condition_show = !this.condition_show;
+                $('#condition_list').slideToggle('fast');
+            },
+            reset_condition:function(){//重置筛选条件
+                this.sel_env='cabinet';
+                this.sel_time='yesterday';
+                this.time_show = time_info(this.sel_time);
+                this.sel_params=['temperature','humidity'];
+                this.btime='';
+                this.etime='';
+                if(this.compare_with_time){//取消按时间对比
+                    this.compare_with_time = false;
+                    this.$dispatch('toggle_compare_type',this.compare_with_time,this.btime,this.etime,this.sel_env,this.sel_time,this.sel_params);
+                }else{
+                    this.change_condition();
+                }
+            },
+            change_condition:function(){
+                this.$dispatch('change_condition',this.sel_env,this.sel_time,this.sel_params,this.compare_with_time);
+            },
+            un_sel_museum:function(item){
+                this.compare_museum_mids.$remove(item.mid);
+                this.$dispatch('un_sel_museum',item);
+            }
+        },
+        events:{
+            'time-change':function(time){
+                if(typeof time != 'string'){
+                    this.sel_time = time.join('');
+                }else {
+                    this.sel_time = time;
+                }
+                this.time_show = time_info(time);
+                this.change_condition();
+            },
+            collapse_header:function(){
+                if(this.condition_show){
+                    this.condition_show = false;
+                    $('#condition_list').slideUp('fast');
+                }
+            }
+        },
+        props:['compare_with_time_enable','module_name','compare_list']
+    });
+    var time_info = function(time){
+        var time_cn = '';
+        if(time=='yesterday'){
+            time_cn = '昨天';
+        }else if(time=='before_yes'){
+            time_cn = '前天';
+        }else if(time=='week'){
+            time_cn = '本周';
+        }else if(time=='month'){
+            time_cn = '本月';
+        }else{
+            time_cn = time[0]+'年'+time[1]+'月'+time[2]+'日';
+        }
+        return time_cn;
+    }
+</script>

@@ -1,0 +1,27 @@
+<!--各馆概况模板-->
+<template id="overview">
+    <div class="content">
+        <div class="fixed_top">
+            <div class="title">
+                <span>各馆概况</span>
+            </div>
+        </div>
+        <div class="museum_container" id="museum_container">
+            <div class="wrapper" v-for="mid in mid_list" :id="mid">
+                <!---->
+                <radar-chart :mid="mid" :compare_list.sync="compare_list" :mid_list="mid_list"></radar-chart>
+            </div>
+        </div>
+        <!--遮罩层-->
+        <div class="ui page dimmer" id="overview_dimmer" @click.stop>
+            <div class="dimmer_alert content">
+                <div class="center">
+                    <div class="alert_info">
+                        <p>您最多只能选择3家博物馆进行对比！</p>
+                        <span class="ok" @click="hide_overview_dimmer">知道了</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

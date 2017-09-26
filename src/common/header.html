@@ -1,0 +1,59 @@
+<div id="header" v-cloak>
+    <a class="logo" href="/regional_center">
+        <div v-text="app_name"></div>
+    </a>
+    <div class="right_top_box">
+        <div class="user_box">
+            <div class="email"></div>
+            <a class="Feedback" href="http://wpa.qq.com/msgrd?v=3&uin=3356346419&site=qq&menu=yes" target="_blank"> 反馈 </a>
+
+            <div class="user"><img src="/common/images/man.png"></div>
+            <div class='user_drag'>
+                <!--<span class="name" v-if="user">{{user.real_name}}<i class="arrow_down"></i></span>-->
+                <span class="name" v-if="user"><i class="arrow_down"></i></span>
+            </div>
+            <ul class="main_menu">
+                <li class="view hide">
+                    <span>切换视图</span>
+                    <ul class="ms_u2">
+                        <li>地图视图</li>
+                        <li>数据视图</li>
+                        <li>工作视图</li>
+                    </ul>
+                </li>
+                <li class="user_set hide"><span>账户设置</span></li>
+                <li class="system_set hide"><span>系统设置</span></li>
+                <li class="help hide"><span>帮助中心</span></li>
+                <li class="logout" v-on:click="exit"><span>退出登录</span></li>
+            </ul>
+        </div>
+        <div class="search">
+            <div class="search_input">
+                <input type="text" v-model="search_keyword" placeholder="搜索当前地图中的区域、文物、监测调控设备">
+
+                <div class="search_drag"></div>
+                <div class="search_send"></div>
+            </div>
+            <div class="search_menu">
+                <div class="menu_left">
+                    <div>
+                        <span class="s1">历史搜索</span>
+                        <span class="s2" v-on:click="search_set('')">清空</span>
+                    </div>
+                    <ul>
+                        <li v-for="sval in search_history" v-on:click="search_set(sval)" v-text="sval"></li>
+                    </ul>
+                </div>
+                <div class="menu_right">
+                    <div>
+                        <span class="s1">重点关注</span>
+                        <span class="s2" v-on:click="search_set('')">清空</span>
+                    </div>
+                    <ul>
+                        <li v-for="sval in search_follow" v-on:click="search_set(sval)" v-text="sval"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,379 @@
+<style>
+    div.radar_container{
+        box-sizing: border-box;
+        height:335px;
+        border-radius: 5px;
+        box-shadow: -1px 1px 3px 1px #ccc;
+        display:inline-block;
+        background-color:#fff;
+        position: relative;
+    }
+    div.radar_container>div.item_title{
+        padding:15px;
+        position: relative;
+    }
+    div.radar_container>div.item_title h4{
+        font-size: 16px;
+        color:#3b404f;
+        font-family : 微软雅黑;
+        font-weight: normal;
+        width:80%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    div.radar_container>div.item_title>div.toolbox{
+        position:absolute;
+        right:15px;
+        top:15px;
+    }
+    div.radar_container>div.item_content{
+        min-height:230px;
+    }
+    div.radar_container>div.item_footer.ui.buttons{
+        height:40px;
+        text-align: center;
+        width:100%;
+        padding: 0 20% 0 20%;
+        margin-bottom:15px;
+    }
+    div.radar_container>div.item_footer.ui.buttons .ui.button{
+        height:40px;
+    }
+    div.radar_container>div.item_footer.ui.buttons .ui.button{
+        width:34%;
+    }
+    div.radar_container>div.item_footer.ui.buttons .ui.button:first-child{
+        width:66%;
+    }
+    div.radar_container>div.item_footer>.ui.button:first-child{
+        border-right: none;
+    }
+    .item_title .drag_move{
+        cursor:move;
+        background-position:-27px -254px;
+    }
+    .handle_move b{
+        width:22px;
+        height:22px;
+        display: inline-block;
+        background:url(__uri("/regional_center/images/icons.png")) no-repeat;
+        margin-right: 5px;
+    }
+    .handle_move .to_top{
+        cursor:pointer;
+        background-position:2px -254px;
+    }
+    div.radar_container>div.item_footer.ui.buttons .ui.button.in_compare{
+        background-color:#bcc6ef;
+        border-color:#bcc6ef;
+        color:#3b404f;
+    }
+    div.radar_container>div.item_footer.ui.buttons .ui.button{
+        position: relative;
+    }
+    div.radar_container>div.item_footer.ui.buttons .ui.button i.multiple_icon {
+        width: 19px;
+        height: 19px;
+        position: absolute;
+        background: url(__uri("/regional_center/images/icons.png")) no-repeat -3px -105px;
+        top: -10px;
+        right: -8px;
+    }
+</style>
+<template id="radar_chart">
+    <div class="radar_container" :class="item_key" :id="mid">
+        <div class="item_title handle_move">
+            <h4 class="handle_move">{{museum_name}}
+                <!--{{mid}}-->
+            </h4>
+            <div class="toolbox handle_move">
+                <b href="javascript:" class="to_top" @click="go_top(mid)"></b>
+                <!--<b href="javascript:" class="drag_move"></b>-->
+            </div>
+        </div>
+        <div :id="'radar-chart_'+mid" class="item_content">
+
+        </div>
+        <div class="item_footer ui buttons">
+            <button type="button" class="ui button" @click="go_detail(museum_url)">进入馆级平台</button>
+            <button type="button" class="ui button" @click="join_compare(mid,museum_name)" :class="{'in_compare':in_list}">
+                加入对比
+                <i class="multiple_icon" v-show="in_list"></i>
+            </button>
+        </div>
+    </div>
+</template>
+<script>
+    Vue.component('radar-chart',{
+        template:'#radar_chart',
+        data:function(){
+            return {
+                radar_chart:'',
+                museum_name:'',
+                indicator:[],//保存雷达图坐标轴相关信息
+                default_radar_option:{
+                    grid:{
+                        left:0,
+                        right:0
+                    },
+                    legend:{//图例配置
+                        show:true,
+                        itemGap:40,
+                        itemWidth: 10,
+                        itemHeight: 10,
+                        top:0,
+                        right:20,
+                        data:[
+                            {
+                                name:'',
+                                icon:'circle',
+                                textStyle:{
+                                    color:'#50566c',
+                                    fontSize:12
+                                }
+                            },
+                            {
+                                name:'',//数据传入
+                                icon:'circle',
+                                textStyle:{
+                                    color:'#50566c',
+                                    fontSize:12
+                                }
+                            },
+                        ],
+                        formatter: function (name) {
+                            if(name.length>=10){
+                                return echarts.format.truncateText(name, 120, '12px Microsoft Yahei', '…');
+                            }else{
+                                return name;
+                            }
+                        },
+                        tooltip: {
+                            show: true,
+                            textStyle:{
+                                fontStyle: 'normal',
+                                fontWeight: 'normal',
+                                fontFamily: 'sans-serif',
+                                fontSize: 10
+                            }
+                        }
+                    },
+                    tooltip: {
+                        trigger:'item',
+                        textStyle:{
+                            color: '#fff',
+                            fontStyle: 'normal',
+                            fontWeight: 'normal',
+                            fontFamily: 'sans-serif',
+                            fontSize: 10,
+                        },
+                        position:function(point, params, dom){
+                            var _WIDTH = $(dom).width();//提示框宽度
+                            var _CONTAINER_WIDTH = $('.radar_container').width();//容器宽度
+                            if(point[0]+_WIDTH+10>_CONTAINER_WIDTH){
+                                return [point[0]-_WIDTH/2, point[1]+10]
+                            }else if(point[0]-_WIDTH-10<0){
+                                return [point[0]+10, point[1]+10];
+                            }else{
+                                return [point[0]+10, point[1]+10];
+                            }
+                        },
+                        formatter:function(params){
+//                            console.log(params);
+                            var result = '';
+                            result += params.name + '<br/>';
+                            if(params.data.value&&params.data.indicator){
+                                $.each(params.data.indicator,function(i,n){
+                                    //如果n.nullItem存在,则
+                                    result += n.name +':'+ (params.data.value[i]==-1?'-':params.data.value[i])+'<br/>';
+                                });
+                            }
+                            return result;
+                        }
+                    },
+                    radar:{
+                        radius:'65%',
+                        indicator: [],
+                        center: ['50%', '50%'],
+                        nameGap:5,
+                        axisLine:{
+                            show:true,
+                            lineStyle:{
+                                color:'#b2b7c6',
+                                width:2
+                            }
+                        },
+                        axisLabel:{
+                            textStyle:{
+                                color:'#b2b7c6'
+                            }
+                        },
+                        shape:'circle',
+                        splitLine:{
+                            lineStyle:{
+                                color:'#d1d7da',
+                                type:'dotted'
+                            }
+                        },
+                        splitArea:{
+                            areaStyle:{
+                                color:'#ffffff'
+                            }
+                        },
+                        name:{
+                            formatter:function(value,indicator){
+                                if(value=='馆藏文物数量'||value=='珍贵文物数量'){
+                                    return value+'(件)';
+                                }else if(value=='固定展览数量'||value=='临时展览数量'){
+                                    return value+'(个)';
+                                }else if(value=='昨日微环境达标率'||value=='昨日小环境达标率'){
+                                    return value+'(%)';
+                                }
+                            }
+                        }
+                    },
+                    series: [{
+                        type: 'radar',
+                        data : [
+                            {
+                                value : [],
+                                name : '',
+                                symbol:'circle',
+                                symbolSize:6,
+                                areaStyle:{
+                                    normal:{
+                                        color:'rgba(4,174,199,.15)'
+                                    }
+                                },
+                                lineStyle:{
+                                    normal:{
+                                        color:'#04aec7',
+                                        width:1.2
+                                    }
+                                },
+                                itemStyle:{
+                                    normal:{
+                                        color:'#04aec7'
+                                    }
+                                }
+                            },
+                            {
+                                value : [],
+                                name : '',//数据传入
+                                symbol:'circle',
+                                symbolSize:6,
+                                areaStyle:{
+                                    normal:{
+                                        color:'rgba(250,82,144,.15)'
+                                    }
+                                },
+                                lineStyle:{
+                                    normal:{
+                                        color:'#fa5290',
+                                        width:1.2
+                                    }
+                                },
+                                itemStyle:{
+                                    normal:{
+                                        color:'#fa5290'
+                                    }
+                                }
+                            }
+                        ]
+                    }]
+                },
+                in_list:false
+            }
+        },
+        created:function(){
+            var me = this;
+            if(this.compare_list&&this.compare_list.length!=0){
+                $.each(this.compare_list,function(i,n){
+                    if(me.mid== n.mid){
+                        me.in_list = true;
+                        return false;
+                    }
+                });
+            }
+        },
+        ready:function(){
+            var me = this;
+            $(window).resize(function(){
+                if(me.$el){
+                    if(me.radar_chart){
+                        me.radar_chart.resize();
+                    }
+                }
+            });
+            this.radar_chart = echarts.init(document.getElementById('radar-chart_'+this.mid));
+            this.$dispatch('ready_radar_chart',this.mid);
+        },
+        props:['mid','mid_list','compare_list'],
+        methods:{
+            go_top:function(mid){//当前组件顶置
+                this.$dispatch('go_top',mid);
+            },
+            go_detail:function(museum_url){
+                // alert('跳转到'+museum_name+'详情页面');
+                window.open(museum_url);
+            },
+            join_compare:function(mid,museum_name){
+                if(!this.in_list){
+                    this.$dispatch('join_compare',mid,museum_name);
+                }else{
+                    this.$dispatch('un_compare',mid,museum_name);
+                }
+            },
+            init_radar_chart:function(data){
+                let option_copy={};
+                for(var key in this.default_radar_option){
+                    option_copy[key] = this.default_radar_option[key];
+                }
+                if(data.data&&data.data[0]){
+                    if(data.data[0].value){
+                        data.data[0].value.forEach(function(value,index){
+                            if(value === null){
+                                data.data[0].value[index] = -1;
+                            }
+                        });
+                    }
+                }
+                this.museum_name = data.data[0].name;
+                this.museum_url = data.url;
+                this.indicator = data.indicator;
+                option_copy.radar.indicator = data.indicator;
+                option_copy.legend.data[0].name = data.legend[0];
+                option_copy.legend.data[1].name = data.legend[1];
+                option_copy.series[0].data[0].name = data.data[1].name;
+                option_copy.series[0].data[0].indicator = this.indicator;
+                option_copy.series[0].data[0].value = data.data[1].value;
+
+                option_copy.series[0].data[1].name = data.data[0].name;
+                option_copy.series[0].data[1].indicator = this.indicator;
+                option_copy.series[0].data[1].value = data.data[0].value;
+//                console.log('清除前:',this.radar_chart);
+                this.radar_chart.clear();//释放之前占用资源
+//                console.log('清除后:',this.radar_chart);
+                this.radar_chart.setOption(option_copy);
+            }
+        },
+        events:{
+            un_sel_compare:function(mid){
+                if(this.mid==mid){
+                    this.in_list = false;
+                }
+            },
+            sel_compare:function(mid){
+                if(this.mid==mid){
+                    this.in_list = true;
+                }
+            },
+            init_radar_chart:function(data){
+                if(data.mid == this.mid){
+                    this.init_radar_chart(data);
+                }
+            },
+        }
+    });
+</script>

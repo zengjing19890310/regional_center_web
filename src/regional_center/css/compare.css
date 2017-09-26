@@ -1,0 +1,289 @@
+#compare_main{
+    width: 100%;
+    margin-top: 115px;
+    padding: 10px;
+    /*min-width: 1140px;*/
+    min-width:1055px;
+    border-radius: 5px;
+    background-color: #fff;
+    /*overflow: hidden;*/
+    box-shadow: -1px 1px 3px 1px #ccc;
+}
+.detail_container.compare_detail_container{
+    min-height:0;
+}
+.ui.top.attached.tabular.menu{
+    background-color:#fff;
+    border-bottom:1px solid #e3e3e3;
+    margin:10px 0 10px 0;
+    padding:0;
+}
+.ui.top.attached.tabular.menu div.item{
+    cursor:pointer;
+    border:none;
+    border-radius: 0;
+    height:40px;
+    line-height: 40px;
+    border-bottom:2px solid transparent;
+    padding:0 10px 0 10px;
+    font-size: 16px;
+    float: left;
+    margin-bottom: -1px;
+}
+.ui.top.attached.tabular.menu div.item.active{
+    border-bottom-color: #6a6cd1;
+    font-weight: normal;
+}
+.ui.top.attached.tabular.menu div.item.active p{
+    color:#6a6cd1;
+    margin: 0;
+}
+.ui.top.attached.tabular.menu div.item b.arrow{
+    display: block;
+    width:0;
+    height:0;
+    border:8px solid transparent;
+    border-top-color: #7b7de5;
+    position:absolute;
+    bottom:-5px;
+    left:43%;
+}
+
+.ui.bottom.attached.active.tab.segment{
+    /*margin-top:50px;*/
+    padding:0;
+    border:none;
+    background-color: #ffffff;
+}
+.bars_container{
+    height:280px;
+    width:100%;
+    position: relative;
+}
+.bar_container{
+    position: absolute;
+    width:25%;
+    top:0;
+    bottom:0;
+}
+.legend_container{
+    position: absolute;
+    top:0;
+    bottom:0;
+    width:25%;
+    background-color:#edeff8;
+    padding:10px;
+}
+.analysis_compliance{
+    left:25%;
+}
+.analysis_compliance.one_chart{
+    width:75%;
+}
+.analysis_compliance.two_chart{
+    width:37.5%;
+}
+
+.analysis_temperature{
+    left:50%;
+}
+
+.analysis_humidity{
+    left:75%;
+}
+
+.analysis_temperature.two_chart,.analysis_humidity.two_chart{
+    left:62.5%;
+    width:37.5%;
+}
+
+.bar_container>div:first-child:not(.bar_title){
+    position: absolute;
+    top:0;
+    bottom:40px;
+    left:0;
+    right:0;
+}
+.bar_container .bar_title{
+    position: absolute;
+    bottom:0;
+    top:245px;
+    left:0;
+    right:0;
+    line-height:35px;
+    text-align: center;
+}
+.bar_container .bar_title span{
+    color:#484d5e;
+    font-size: 16px;
+    padding:6px 15px 6px 15px;
+    border:1px solid #b2b7c6;
+    border-radius:18px;
+}
+.legend_item{
+    margin:30px;
+    line-height:20px;
+    cursor:pointer;
+}
+.legend_item .legend_color{
+    display: inline-block;
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    position: relative;
+    margin-right:5px;
+    top:1px;
+    background-color:#bbb;
+}
+.legend_color.legend_color0{
+    background-color:#04aec7;
+}
+.legend_color.legend_color1{
+    background-color:#f92f79;
+}
+.legend_color.legend_color2{
+    background-color:#6a6cd1;
+}
+.legend_item .museum_name{
+    font-size: 14px;
+    font-weight: normal;
+    color:#bbb;
+}
+.legend_item .legend_color.legend_color0 + .museum_name,.legend_item .legend_color.legend_color1 + .museum_name,.legend_item .legend_color.legend_color2 + .museum_name{
+    color:#484d5e;
+}
+.legend_item .cabinet_num{
+    font-size: 12px;
+    font-weight: normal;
+    color:#878da1;
+    margin-left:20px;
+}
+.compare_radar_container{
+    height:320px;
+    margin-top:20px;
+    width:100%;
+    position: relative;
+}
+.compare_radar{
+    position: absolute;
+    top:0;
+    bottom:0;
+    width:49.5%;
+    background-color:#fff;
+    border-radius:5px;
+    box-shadow: -1px 1px 3px 1px #ccc;
+}
+.compare_radar.all_compliance{
+    left:0;
+}
+.compare_radar.all_scatter{
+    right:0;
+}
+#all_compliance,#all_scatter{
+    position: absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+}
+.position_map{
+    height:420px;
+    width:100%;
+    margin-top:20px;
+    border-radius:5px;
+    box-shadow: -1px 1px 3px 1px #ccc;
+    background-color:#fff;
+    margin-bottom: 5px;
+    position: relative;
+}
+.position_map .map_title{
+    height:60px;
+    line-height: 60px;
+    padding-left:25px;
+    color:#484d5e;
+    font-size: 18px;
+    font-weight: normal;
+    font-family:'微软雅黑';
+}
+.position_map .position_map_container{
+    position: absolute;
+    top:60px;
+    left:15px;
+    right:15px;
+    bottom:15px;
+}
+.position_map .position_map_container div.wrapper>div{
+    position: absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+}
+
+#compare_dimmer .dimmer_alert .center .alert_info:before{
+    display: table;
+    content:'';
+    clear: both;
+}
+#compare_dimmer{
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index:10000000;
+}
+#compare_dimmer .dimmer_alert .center .alert_info{
+    width:280px;
+    height:150px;
+    margin:0 auto;
+    background-color:#fff;
+    border-radius:5px;
+}
+#compare_dimmer .dimmer_alert .center .alert_info p{
+    margin-top: 50px;
+    margin-bottom:25px;
+    font-size: 14px;
+    color:#3b404f;
+    padding:0 10px 0 10px;
+}
+#compare_dimmer .dimmer_alert .center .alert_info span.ok{
+    display: inline-block;
+    width:100px;
+    height:30px;
+    line-height: 30px;
+    text-align: center;
+    color:#fff;
+    border-radius:15px;
+    background-color:#6a6cd1;
+    font-size: 14px;
+    cursor:pointer;
+}
+#history_compliance,#history_scatter_temperature,#history_scatter_humidity{
+    height:320px;
+    width:100%;
+}
+.compare_line_container>div{
+    position: relative;
+}
+
+/*详情部分*/
+.detail_container{
+    /*min-height:422px;*/
+    min-width:1140px;
+    position: relative;
+    /*overflow-y: scroll;*/
+}
+/*图表展示部分自适应，使用媒体查询，可以进行扩展*/
+@media screen and (min-width:1280px){
+    .detail_container{
+        margin:0 auto;
+    }
+}
+div.compare_radar_container>div>i.tips_mark{
+    position: absolute;
+    top:10px;
+    right:10px;
+    display: inline-block;
+    width: 21px;
+    height: 21px;
+    background: url('../images/icons.png') no-repeat -57px -150px;
+    z-index:1000;
+    cursor:pointer;
+}

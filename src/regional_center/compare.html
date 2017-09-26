@@ -1,0 +1,354 @@
+<!--对比分析模板-->
+<template id="compare">
+    <div class="content">
+        <div id="compare_header">
+            <fixed-top module_name="compare" compare_with_time_enable="true"
+                       :compare_list.sync="compare_list"></fixed-top>
+        </div>
+        <div id="compare_main">
+            <div class="ui top attached tabular menu">
+                <div v-for="(key,tab) in tabs" @click="toggle_tabs(key)" class="item" :class="{'active':key==tab_name}"
+                     v-show="key!='history_overview'||(key=='history_overview'&&!compare_with_time&&(sel_time=='week'||sel_time=='month'))">
+                    <p>
+                        {{tab}}
+                    </p>
+                    <!--<b class="arrow" v-show="key==tab_name"></b>-->
+                </div>
+            </div>
+            <div class="ui bottom attached active tab segment">
+                <div v-show="tab_name=='overview'">
+                    <!--达标与稳定概况-->
+                    <div class="bars_container">
+                        <div class="legend_container">
+                            <div class="legend_item" v-for="(index,data) in legend_data" @click="toggle_legends(data.name,index)">
+                                <span class="legend_color" :class={'legend_color0':index==0&&legends_status.legend0,'legend_color1':index==1&&legends_status.legend1,'legend_color2':index==2&&legends_status.legend2} :data-index="index"></span>
+                                <b class="museum_name">{{data.name}}</b><br/>
+                                <b class="cabinet_num">{{env_list[sel_env]}}数量:{{data.count}}</b>
+                            </div>
+                        </div>
+                        <div class="bar_container analysis_compliance"
+                             :class="{'one_chart':sel_params.indexOf('temperature')==-1&&sel_params.indexOf('humidity')==-1,'two_chart':(sel_params.indexOf('temperature')!=-1&&sel_params.indexOf('humidity')==-1)||(sel_params.indexOf('temperature')==-1&&sel_params.indexOf('humidity')!=-1)}">
+                            <div id="analysis_compliance">
+
+                            </div>
+                            <div class="bar_title">
+                                <span>
+                                   达标率统计概况
+                                </span>
+                            </div>
+                        </div>
+                        <div class="bar_container analysis_temperature" v-show="sel_params.indexOf('temperature')!=-1"
+                             :class="{'two_chart':sel_params.indexOf('temperature')!=-1&&sel_params.indexOf('humidity')==-1}">
+                            <div id="analysis_temperature">
+
+                            </div>
+                            <div class="bar_title">
+                                <span>
+                                    离散系数统计概况-温度
+                                </span>
+                            </div>
+                        </div>
+                        <div class="bar_container analysis_humidity" v-show="sel_params.indexOf('humidity')!=-1"
+                             :class="{'two_chart':sel_params.indexOf('temperature')==-1&&sel_params.indexOf('humidity')!=-1}">
+                            <div id="analysis_humidity">
+
+                            </div>
+                            <div class="bar_title">
+                                <span>
+                                    离散系数统计概况-湿度
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-show="tab_name=='history_overview'">
+                    <div v-show="show_lines" class="compare_line_container">
+                        <div id="history_compliance" class="compare_line">
+
+                        </div>
+                        <div id="history_scatter_temperature" v-show="sel_params.indexOf('temperature')!=-1">
+
+                        </div>
+                        <div id="history_scatter_humidity" v-show="sel_params.indexOf('humidity')!=-1">
+
+                        </div>
+                    </div>
+                    <div v-show="!show_lines">
+                        <div style="font-size:14px;color:#51576d;text-align: center;line-height:30px;">
+                            暂无数据
+                        </div>
+                    </div>
+                </div>
+                <div v-show="tab_name=='detail'">
+                    <div class="detail_container compare_detail_container">
+                        <div class="detail_tabs_search">
+                            <div class="left_tabs lf">
+                                <bubble-tabs :tabs_data="tabs_data_detail" :sel_params="sel_params"
+                                             tab_name="detail"></bubble-tabs>
+                            </div>
+                            <div class="right_search lf" v-show="!compare_with_time">
+                                <div class="ui icon input">
+                                    <input type="text" placeholder="搜索博物馆名称..." v-model="search_stack_bar_name"
+                                           @keyup="search_museum_detail">
+                                    <i class="search icon link" @click="search_museum_detail"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="texture_list">
+                            <tbody>
+                            <tr v-show="sel_env!='hall' && curr_param_tab=='humidity'">
+                                <td v-for="data in humidity_tabs_texture"
+                                    :class="{'active':curr_humidity_texture==data.text}"
+                                    @click="choose_texture(data.text)">
+                                    {{data.text}}
+                                </td>
+                            </tr>
+                            <tr v-show="sel_env!='hall' && curr_param_tab=='light'">
+                                <td v-for="data in light_tabs_texture" :class="{'active':curr_light_texture==data.text}"
+                                    @click="choose_texture(data.text)">
+                                    {{data.text}}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="museum_table detail">
+                            <div class="table header">
+                                <div class="abnormal_info" v-show="abnormal_status&&((abnormal_list&&abnormal_list.length!=0)||(wave_abnormal_list&&wave_abnormal_list.length!=0))" id="abnormal_info"
+                                     @mouseenter="in_abnormal" @mouseleave="hide_abnormal">
+                                    <ul v-if="abnormal_list&&abnormal_list.length!=0">
+                                        <li v-for="data in abnormal_list">
+                                            <b>{{data.val}}{{curr_param_unit}}</b><br/>
+                                            <b class="abnormal_equip_no">设备号:{{data.equip_no}}</b><br/>
+                                            <span class="abnormal_date">{{data.date}}</span>
+                                        </li>
+                                    </ul>
+                                    <ul v-if="wave_abnormal_list&&wave_abnormal_list.length!=0">
+                                        <li v-for="data in wave_abnormal_list">
+                                            <b>{{data.val}}{{curr_param_unit}}</b><br/>
+                                            <b class="abnormal_env_name">环境名称:{{data.env_name}}</b><br/>
+                                            <span class="abnormal_date">{{data.date}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="tr">
+                                    <span class="collapse_icon" @click="table_collapse"
+                                          :class="{'collapse':is_collapse}">
+
+                                    </span>
+
+                                    <div class="th m_name">博物馆名称</div>
+                                    <div class="th m_data">
+                                        <div>
+                                            博物馆数据详情
+                                            <div class="legend">
+                                                <span class="icon avg"></span>平均数
+                                                <span class="icon median"></span>中位数
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order">
+                                        <div>
+                                            极差
+                                            <span class="order_icon asc"
+                                                  :class="{'active':stack_bar_order=='distanceasc'}"
+                                                  @click="sort_stack_bar('distance','asc')"></span>
+                                            <span class="order_icon desc"
+                                                  :class="{'active':stack_bar_order=='distancedesc'}"
+                                                  @click="sort_stack_bar('distance','desc')"></span>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order">
+                                        <div>
+                                            达标率
+                                            <span class="order_icon asc"
+                                                  :class="{'active':stack_bar_order=='complianceasc'}"
+                                                  @click="sort_stack_bar('compliance','asc')"></span>
+                                            <span class="order_icon desc"
+                                                  :class="{'active':stack_bar_order=='complianceFdesc'}"
+                                                  @click="sort_stack_bar('compliance','desc')"></span>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order" v-show="!is_collapse">
+                                        <div>
+                                            <i id="abnormal_help" class="question_mark">
+
+                                            </i>异常值
+                                            <span class="order_icon asc"
+                                                  :class="{'active':stack_bar_order=='count_abnormalasc'}"
+                                                  @click="sort_stack_bar('count_abnormal','asc')"></span>
+                                            <span class="order_icon desc"
+                                                  :class="{'active':stack_bar_order=='count_abnormaldesc'}"
+                                                  @click="sort_stack_bar('count_abnormal','desc')"></span>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order" v-show="!is_collapse">
+                                        <div>
+                                            平均数
+                                            <span class="order_icon asc"
+                                                  :class="{'active':stack_bar_order=='averageasc'}"
+                                                  @click="sort_stack_bar('average','asc')"></span>
+                                            <span class="order_icon desc"
+                                                  :class="{'active':stack_bar_order=='averagedesc'}"
+                                                  @click="sort_stack_bar('average','desc')"></span>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order"
+                                         v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <div>
+                                            标准差
+                                            <span class="order_icon asc"
+                                                  :class="{'active':stack_bar_order=='standardasc'}"
+                                                  @click="sort_stack_bar('standard','asc')"></span>
+                                            <span class="order_icon desc"
+                                                  :class="{'active':stack_bar_order=='standarddesc'}"
+                                                  @click="sort_stack_bar('standard','desc')"></span>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order wave"
+                                         v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <div>
+                                            日波动
+                                            <span class="order_icon asc" :class="{'active':stack_bar_order=='waveasc'}"
+                                                  @click="sort_stack_bar('wave','asc')"></span>
+                                            <span class="order_icon desc"
+                                                  :class="{'active':stack_bar_order=='wavedesc'}"
+                                                  @click="sort_stack_bar('wave','desc')"></span>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order wave"
+                                         v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <div>
+                                            <i id="wave_help" class="question_mark">
+
+                                            </i>日波动
+                                            <span class="order_icon asc"
+                                                  :class="{'active':stack_bar_order=='wave_normalasc'}"
+                                                  @click="sort_stack_bar('wave_normal','asc')"></span>
+                                            <span class="order_icon desc"
+                                                  :class="{'active':stack_bar_order=='wave_normaldesc'}"
+                                                  @click="sort_stack_bar('wave_normal','desc')"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="table" v-show="curr_page_data">-->
+                            <!--<div class="tr">-->
+                            <!--<div class="td">-->
+                            <!--没有数据！-->
+                            <!--</div>-->
+                            <!--</div>-->
+                            <!--</div>-->
+                            <div class="table" v-for="(index,data) in filtered_stack_bar_data" transition="expand_table"
+                                 @mouseenter="show_legend(data.mid,data.date)" @mouseleave="hide_legend(data.mid,data.date)" v-show="data">
+                                <div class="tr">
+                                    <div class="td m_name">
+                                        <span class="museum_pic">
+
+                                        </span>
+
+                                        <p><span v-show="data.date">({{data.date}})</span>{{data.name}}</p>
+                                    </div>
+                                    <div class="td m_data">
+                                        <stack-bar :stark_bar_max="stack_bar_max"
+                                                   :stark_bar_min="stack_bar_min" :max="parseFloat(data.max)"
+                                                   :min="parseFloat(data.min)" :avg="parseFloat(data.average)"
+                                                   :median="parseFloat(data.middle)" :key="data.mid" :name="data.museum"
+                                                   :is_collapse="is_collapse" :curr_param_tab="curr_param_tab" :date="data.date"
+                                                   v-if="!data.empty" :date="data.date"></stack-bar>
+                                        <div v-else
+                                             style="font-size:14px;color:#51576d;text-align: center;line-height:60px;">
+                                            暂无数据
+                                        </div>
+                                    </div>
+                                    <div class="td">
+                                        <span v-if="!data.empty">{{data.distance}}{{curr_param_unit}}</span>
+                                        <span v-else>-</span>
+                                    </div>
+                                    <div class="td">
+                                        <span v-if="!data.empty">{{(data.compliance*100).toFixed(2)}}%</span>
+                                        <span v-else>-</span>
+                                    </div>
+                                    <div class="td" v-show="!is_collapse">
+                                        <span :class="{'count_abnormal':data.count_abnormal>0}"
+                                              @mouseenter.stop="show_abnormal($event,data)"
+                                              @mouseleave.stop="hide_abnormal()"
+                                              v-if="!data.empty">{{data.count_abnormal}}</span>
+                                        <span v-else>-</span>
+                                    </div>
+                                    <div class="td" v-show="!is_collapse">
+                                        <span v-if="!data.empty">{{data.average}}{{curr_param_unit}}</span>
+                                        <span v-else>-</span>
+                                    </div>
+                                    <div class="td"
+                                         v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <span v-if="!data.empty">{{data.standard}}{{curr_param_unit}}</span>
+                                        <span v-else>-</span>
+                                    </div>
+                                    <div class="td wave"
+                                         v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <span v-if="!data.empty&&data.wave_min&&data.wave_max" @mouseenter="show_abnormal($event,data,'wave')"
+                                              @mouseleave="hide_abnormal">
+                                            <b :class="{'status':data.wave_min.status=='1'}">{{data.wave_min.value}}</b> - <b
+                                                :class="{'status':data.wave_max.status=='1'}">{{data.wave_max.value}}</b>{{curr_param_unit}}
+                                        </span>
+                                        <span v-else>
+                                            -
+                                        </span>
+                                    </div>
+                                    <div class="td wave"
+                                         v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <span v-if="!data.empty&&data.wave_min2&&data.wave_max2" @mouseenter="show_abnormal($event,data,'wave_normal')"
+                                              @mouseleave="hide_abnormal">
+                                            <b :class="{'status':data.wave_min2.status=='1'}">{{data.wave_min2.value}}</b> - <b
+                                                :class="{'status':data.wave_max2.status=='1'}">{{data.wave_max2.value}}</b>{{curr_param_unit}}
+                                        </span>
+                                        <span v-else>
+                                            -
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="compare_radar_container" v-show="tab_name=='overview'">
+            <div class="compare_radar all_compliance">
+                <!--<i id="all_compliance_tips" class="tips_mark"></i>-->
+                <div id="all_compliance">
+
+                </div>
+            </div>
+            <div class="compare_radar all_scatter">
+                <i id="all_scatter_tips" class="tips_mark"></i>
+                <div id="all_scatter">
+
+                </div>
+            </div>
+        </div>
+        <div class="position_map">
+            <h4 class="map_title">
+                位置图
+            </h4>
+            <div class="position_map_container">
+                <div class="wrapper">
+                    <map-chart tab_name="compare">
+
+                    </map-chart>
+                </div>
+            </div>
+        </div>
+        <!--遮罩层-->
+        <div class="ui page dimmer" id="compare_dimmer" @click.stop>
+            <div class="dimmer_alert content">
+                <div class="center">
+                    <div class="alert_info">
+                        <p>{{msg}}！</p>
+                        <span class="ok" @click="hide_compare_dimmer">知道了</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

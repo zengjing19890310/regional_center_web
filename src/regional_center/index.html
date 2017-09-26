@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body id="app" @click="collapse_header($event)">
+    __inline("/common/header.html")
+    <div class="app" v-cloak>
+        <!--<h1>{{msg}}</h1>-->
+        <aside>
+            <ul>
+                <li v-for="data in modules" :data-name="data.en_name">
+                    <a href="javascript:" v-link="'/'+data.en_name" :class="{'active':active_modules==data.en_name}"  @click="toggle_modules(data.en_name)">
+                        <b class="icon" :class="data.en_name"></b> {{data.cn_name}}
+                    </a>
+                    <span class="compare_num" v-if="data.en_name=='compare'">{{compare_num}}</span>
+                </li>
+            </ul>
+        </aside>
+        <section>
+            <router-view></router-view>
+        </section>
+    </div>
+    <!-- 载入模板-->
+    __inline("./detail.html")
+    __inline("./overview.html")
+    __inline("./compare.html")
+    __inline("./report.html")
+
+    <!-- 控件引入-->
+    <!--固定顶部组件-->
+    __inline("./template/fixed_top.html")
+    <!--时间控件-->
+    __inline("./template/timeBox.html")
+    <!-- 自定义柱状图-->
+    __inline("./template/bar_chart.html")
+    <!-- echarts原生缩略图-->
+    __inline("./template/thumbnail_chart.html")
+    <!--自定义堆叠柱状图-->
+    __inline("./template/stack_bar_chart.html")
+    <!-- echarts原生雷达图，各馆概况页面-->
+    __inline("./template/radar_chart.html")
+    <!-- echarts原生饼图，区域详情页面-->
+    __inline("./template/pie_chart.html")
+    <!-- echarts原生地图,区域详情页面-->
+    __inline("./template/map_chart.html")
+    <!-- 引入自定义二级气泡tabs-->
+    __inline("./template/bubble_tabs.html")
+    <script type="text/javascript">
+        require('regional_center');
+    </script>
+</body>
+</html>

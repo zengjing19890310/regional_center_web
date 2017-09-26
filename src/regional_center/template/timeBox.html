@@ -1,0 +1,166 @@
+<style>
+	.time_box{
+
+	}
+	.time_box span,.time_box p,.typeBox>span{
+        color: #3b404f;
+	    font-size: 1rem;
+        width:60px;
+        padding:0;
+	    height: 30px;
+	    border: 1px solid #9a9ea2;
+	    line-height: 30px;
+	    text-align: center;
+	    float: left;
+	    cursor: pointer;
+	    margin-right: -1px;
+		background-color: #fff;
+	    /*border-radius: 5px;*/
+	}
+	.time_box>span:first-child{
+		border-radius:5px 0 0 5px;
+	}
+	.time_box>span:nth-child(5){
+		border-radius: 0 5px 5px 0;
+	}
+	.time_box p{
+	    border: 0;
+	    margin-right: 27px;
+	    color: #6c7177;
+	}
+	.time_box span:hover,.time_box span.active{
+		color: #ffffff;
+		background-color: #7b7de5;
+        border-color: #7b7de5;
+	}
+	.diy{
+        margin-left: -59px;
+	    height: 30px;
+	    background: #fff;
+	    border: 1px solid #9a9ea2;
+	    line-height: 27px;
+	    float: left;
+	}
+	.button{
+		display: inline-block;
+		padding: 0 10px;
+		height: 26px;
+		border: 1px solid #dddddd;
+		cursor: pointer;
+		margin-top: 1px;
+	}
+	.button:hover{
+		background-color: #bcc6ef;
+		color:#fff;
+	}
+	div.time_box:after{
+		content:'';
+		display: block;
+		clear: both;
+	}
+	.laydate_body .laydate_bottom .laydate_btn a {
+		float: left;
+		height: 20px;
+		padding: 0 5px;
+	}
+	.laydate_body .laydate_table {
+		width: 226px;
+		margin: 0 5px;
+		border-collapse: collapse;
+		border-spacing: 0;
+	}
+	.laydate_body .laydate_bottom .laydate_btn {
+		position: absolute;
+		right: 7px;
+		top: -2px;
+	}
+	.laydate_body .laydate_table {
+		width: 226px;
+		margin: 0 5px;
+		border-collapse: collapse;
+		border-spacing: 0;
+		position:relative;
+		top:-1px;
+	}
+</style>
+
+<!--时间选择-->
+<template id="time_box">
+	<div class="time_box">
+		<!--<p>时间选择</p>-->
+		<span @click="change('yesterday',$event)" class="yesterday" :class="{'active':time=='yesterday'}">昨天</span><span @click="change('before_yes',$event)" class="before_yes" :class="{'active':time=='before_yes'}">前天</span><span @click="change('week',$event)" class="week" :class="{'active':time=='week'}">本周</span><span @click="change('month',$event)" class="month" :class="{'active':time=='month'}">本月</span><span @click.stop="change('diy',$event)" class="+" :class="{'active':time!=''&&time!='yesterday'&&time!='before_yes'&&time!='week'&&time!='month'}" >自定义</span>
+		<div class="diy" v-show="showHide">
+			<!--<input placeholder="请输入日期" id="start_time" class="laydate-icon" onclick="laydate()">-->
+			<!--<input placeholder="请输入日期" id="end_time" class="laydate-icon" onclick="laydate()">-->
+            <input placeholder="请输入日期" id="get_time" class="laydate-icon" v-model="pickTime" @click.stop="laydate">
+			<!--<div class="button" @click="diyTimePost">确定</div>-->
+		</div>
+	</div>
+</template>
+
+<script>
+	/*
+	* 2016-9-23 by:曾竞
+	*
+	* 对时间控件进行了调整:增加判断自定义时间区间条件下,时间起始和终止的判断
+	* 对时间控件进行了调整:将active样式的添加调整为Vue样式绑定方式,弃用了jquery查找元素方式
+	*
+	* */
+	Vue.component('time-box',{
+		template:'#time_box',
+		props:{
+			time:'time',
+		},
+		data:function(){
+			return {
+				showHide:false,
+                pickTime:''
+			}
+		},
+        created:function(){
+            this.pickTime = laydate.now(-1);
+        },
+		methods:{
+			change:function(time){
+				this.time=time;
+				if(time=='diy'){
+					this.diyShowHide();
+				}else{
+					this.timeChange(time);
+					this.showHide=false;
+				}
+			},
+			timeChange:function(time){
+				var This=this;
+				this.$dispatch('time-change',time);
+			},
+			diyShowHide:function(){
+				this.showHide=!this.showHide;
+			},
+			diyTimePost:function(e){
+				var element=e.target||e.srcElement;
+				var $input=$(element).siblings('input');
+                var time = $input.filter('#get_time').val();
+                time = time.split('-');
+                this.$dispatch('time-change',time);
+            },
+            laydate:function(){
+                var me = this;
+                laydate({
+                    format: 'YYYY-MM-DD',
+                    isclear: false, //是否显示清空
+                    istoday: false, //是否显示今天
+                    issure: false, //是否显示确认
+                    max: laydate.now(-1),//控制最晚时间为昨天
+                    choose:function(dates){//改变事件控件选择,直接发送选择的时间
+                        var time;
+                        me.pickTime = dates;
+                        time =  me.pickTime.split('-');
+                        me.$dispatch('time-change',time);
+                    }
+                });
+            }
+		}
+	});
+
+</script>

@@ -1,0 +1,113 @@
+<style>
+    div.wrapper{
+        position: relative;
+        width:100%;
+        height:100%;
+    }
+
+    /*after伪类提示文本信息*/
+    [data-tooltip]:after{
+        font-size:0.8rem;
+        padding:5px;
+    }
+    div.bar_chart_out{
+        width:100%;
+        height:18px;
+        border-radius:9px;
+        background-color: #e1e3eb;
+        position:relative;
+        top:20px;
+        overflow: hidden;
+    }
+    div.bar_chart_in{
+        position: absolute;
+        top:0;
+        left:0;
+        bottom:0;
+        width:0;
+        border-bottom-left-radius:9px;
+        border-top-left-radius:9px;
+    }
+    div.bar_chart_in.good{
+        background-color: #6a6cd1;
+    }
+    div.bar_chart_in.bad{
+        background-color: #8691b7;
+    }
+    div.avg_mark{
+        position: absolute;
+        border:1px solid;
+        width:0;
+        top:20px;
+        bottom:21px;
+    }
+    div.avg_symbol{
+        width:18px;
+        height:13px;
+        position: absolute;
+        top:-13px;
+        left:-9px;
+        background:url(__uri("/regional_center/images/icons.png")) no-repeat;
+    }
+    div.avg_mark.good{
+        border-color:#fff;
+    }
+    div.avg_mark.good div.avg_symbol{
+        background-position: -18px -153px;
+    }
+    div.avg_mark.bad{
+        border-color:#c8cddf;
+    }
+    div.avg_mark.bad div.avg_symbol{
+        background-position: -38px -153px;
+    }
+</style>
+<template id="regional_center_bar_chart">
+    <div class="wrapper" :data-key.once="bar_key">
+        <div class="bar_chart_out">
+            <div class="bar_chart_in" :class="{'good':(type=='standard_scatter' && (bar_data>=avg_data))||(type!='standard_scatter' && (bar_data<=avg_data)),'bad':(type=='standard_scatter' && (bar_data<avg_data))||(type!='standard_scatter' && (bar_data>avg_data))}" :style="{width:(bar_data/(max-min))*100+'%'}">
+
+            </div>
+        </div>
+        <!--<div class="avg_mark" :class="{'good':(type=='standard_scatter' && (bar_data>=avg_data))||(type!='standard_scatter' && (bar_data<=avg_data)),'bad':(type=='standard_scatter' && (bar_data<avg_data))||(type!='standard_scatter' && (bar_data>avg_data))}" :style="{left:(avg_data/(max-min))*100+'%'}">-->
+        <div class="avg_mark" :class="{'good':bar_data>=avg_data,'bad':bar_data<avg_data}" :style="{left:(avg_data/(max-min))*100+'%'}">
+            <div class="avg_symbol"></div>
+        </div>
+    </div>
+</template>
+<script>
+    //全局注册组件
+    Vue.component('bar-chart', {
+        template: '#regional_center_bar_chart',
+        ready:function(){
+            var me=this;
+            this.reset_bar();
+            setTimeout(function(){
+                me.load_bar();
+            },0);
+        },
+        data:function(){
+            return {
+
+            }
+        },
+        methods:{
+            reset_bar:function(){//将所有bar的色条全部重置
+                $('div.wrapper[data-key='+this.bar_key+'] div.bar_chart_in').css({'width':0,transition:''});
+            },
+            load_bar:function(){//按照数据加载bar色条,并确定均值线的位置
+                var me = this;
+                $('div.wrapper[data-key='+me.bar_key+'] div.bar_chart_in').css({'width':(me.bar_data/(me.max-me.min))*100+'%',transition:'width .5s ease'});
+            }
+        },
+        events:{
+            reset_bar:function(){
+                this.reset_bar();
+            },
+            load_bar:function(){
+                this.load_bar();
+            }
+        },
+        props:['bar_data','avg_data','max','min','bar_key','type']
+    });
+</script>

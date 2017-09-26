@@ -1,0 +1,63 @@
+
+.nav_box {
+    position: absolute;
+    top: 83px;
+    left: 0;
+    width: 100%;
+    font-size: 16px;
+    font-family: '微软雅黑';
+    height: 50px;
+}
+
+.nav_box.detail {
+    height:40px;
+    border: 1px solid #ecebe2;
+}
+
+.nav_box dl {
+    position: absolute;
+    left: 50px;
+    height: 25px;
+    line-height: 25px;
+    top: 8px;
+}
+.panel-group{
+    margin-bottom: 0;
+}
+.nav_box.detail dl {
+    left: 10px;
+    top: 6px;
+}
+
+.nav_box a.back {
+    position: absolute;
+    right: 40px;
+    top: 10px;
+}
+.nav_box dl dd {
+    height: 25px;
+    line-height: 25px;
+    display: inline-block;
+    background: url('img/toggle.png') no-repeat 0 0;
+    padding: 0 10px 0 15px;
+    color: #647481;
+}
+
+.nav_box dl dd:first-child{
+    background: url('img/home.png') no-repeat 0 4px;
+    padding: 0 10px 0 27px;
+}
+
+.nav_box dl dd:last-child a {
+    color: #5a9e6d;
+}
+
+.nav_box a {
+    color: #647481;
+    text-decoration: none;
+}
+
+.nav_box a:hover, .nav_box dl dd:last-child a:hover {
+    font-weight: 800;
+    color: #5A9E6D;
+}

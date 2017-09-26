@@ -1,0 +1,195 @@
+<style>
+    div.wrapper{
+        position: relative;
+        width:100%;
+        height:100%;
+    }
+    div.wrapper>div.symbol{
+        position: absolute;
+        top:20px;
+        height:18px;
+        width:100%;
+        z-index:1000;
+    }
+    div.wrapper>div.symbol>div{
+        position: absolute;
+        top:0;
+        bottom:0;
+        border-left:1px solid;
+        display: none;
+    }
+    div.wrapper>div.symbol>div.max{
+        border-color:#7a7cd6;
+        z-index:1000;
+    }
+    div.wrapper>div.symbol>div.min{
+        border-color:#939dbe;
+        z-index:1000;
+    }
+    div.wrapper>div.symbol>div.avg{
+        border-color:#1bcb76;
+    }
+    div.wrapper>div.symbol>div.median{
+        border-color:#fe7c1c;
+    }
+    div.stack_bar_out{
+        width:100%;
+        height:18px;
+        border-radius:9px;
+        background-color: #e1e3eb;
+        position:relative;
+        top:20px;
+        overflow: hidden;
+    }
+    div.stack_bar_in{
+        position: absolute;
+        background-color:#aab2cc;
+        top:0;
+        bottom:0;
+    }
+    div.mark{
+        position: absolute;
+        width:20px;
+        height:13px;
+        background: url(__uri("/regional_center/images/icons.png")) no-repeat;
+    }
+    div.mark span{
+        max-width:40px;
+        font-size: 12px;
+        color:#3b404f;
+        position: absolute;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        line-height:12px;
+    }
+    div.min div.mark{
+        background-position: 0 -235px;
+    }
+    div.min div.mark span{
+        z-index:1050;
+    }
+    div.median div.mark{
+        background-position: -20px -235px;
+    }
+    div.max div.mark{
+        background-position: -61px -236px;
+    }
+    div.max div.mark span{
+        z-index:1050;
+    }
+    div.avg div.mark{
+        background-position: -40px -236px;
+    }
+    div.min div.mark,div.median div.mark{
+        top:-12px;
+        left:-10px;
+    }
+    div.min div.mark span,div.median div.mark span{
+        top: 30px;
+        left: 0;
+    }
+    div.max div.mark,div.avg div.mark{
+        bottom:-13px;
+        left:-10px;
+    }
+    div.max div.mark span,div.avg div.mark span{
+        top: -30px;
+        left: 0;
+    }
+</style>
+
+<template id="stack_bar">
+    <div class="wrapper" :data-key="key" :data-date="date">
+        <div class="symbol" v-if="is_collapse||((curr_param_tab!='temperature')&&(curr_param_tab!='humidity'))">
+            <div class="max" :style="{left:((max-stark_bar_min)/(stark_bar_max-stark_bar_min))*100+'%'}">
+                <div class="mark">
+                    <span>{{max}}</span>
+                </div>
+            </div>
+            <div class="min" :style="{left:((min-stark_bar_min)/(stark_bar_max-stark_bar_min))*100+'%'}">
+                <div class="mark">
+                    <span>{{min}}</span>
+                </div>
+            </div>
+            <div class="avg" :style="{left:((avg-stark_bar_min)/(stark_bar_max-stark_bar_min))*100+'%'}">
+                <div class="mark" :data-title="'平均数：'+avg">
+                </div>
+            </div>
+            <div class="median" :style="{left:((median-stark_bar_min)/(stark_bar_max-stark_bar_min))*100+'%'}">
+                <div class="mark" :data-title="'中位数：'+median">
+                </div>
+            </div>
+        </div>
+        <div class="symbol" v-else>
+            <div class="max" :style="{left:((max-stark_bar_min)/(stark_bar_max-stark_bar_min))*100+'%'}">
+                <div class="mark" :data-title="'最大值：'+max">
+                </div>
+            </div>
+            <div class="min" :style="{left:((min-stark_bar_min)/(stark_bar_max-stark_bar_min))*100+'%'}">
+                <div class="mark" :data-title="'最小值：'+min">
+                </div>
+            </div>
+            <div class="avg" :style="{left:((avg-stark_bar_min)/(stark_bar_max-stark_bar_min))*100+'%'}">
+                <div class="mark" :data-title="'平均数：'+avg">
+                </div>
+            </div>
+            <div class="median" :style="{left:((median-stark_bar_min)/(stark_bar_max-stark_bar_min))*100+'%'}">
+                <div class="mark" :data-title="'中位数：'+median">
+                </div>
+            </div>
+        </div>
+        <div class="stack_bar_out">
+            <div class="stack_bar_in">
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    Vue.component('stack-bar',{
+        template:'#stack_bar',
+        data:function(){
+            return {
+
+            }
+        },
+        ready:function(){
+            this.reset_stack_bar();
+            this.load_stack_bar();
+        },
+        methods:{
+            load_stack_bar:function(){
+                var me=this;
+                if(me.date){//传入了时间参数，则按时间对比
+                    setTimeout(function(){
+                        $('div.wrapper[data-date='+me.date+'] div.stack_bar_in').css({left:((parseFloat(me.min)-parseFloat(me.stark_bar_min))/(parseFloat(me.stark_bar_max)-parseFloat(me.stark_bar_min)))*100+'%','width':((parseFloat(me.max)-parseFloat(me.min))/(parseFloat(me.stark_bar_max)-parseFloat(me.stark_bar_min)))*100+'%',transition:'all .5s ease',minWidth:'1px'});
+                    },0);
+                }else{
+                    setTimeout(function(){
+                        $('div.wrapper[data-key='+me.key+'] div.stack_bar_in').css({left:((parseFloat(me.min)-parseFloat(me.stark_bar_min))/(parseFloat(me.stark_bar_max)-parseFloat(me.stark_bar_min)))*100+'%','width':((parseFloat(me.max)-parseFloat(me.min))/(parseFloat(me.stark_bar_max)-parseFloat(me.stark_bar_min)))*100+'%',transition:'all .5s ease',minWidth:'1px'});
+                    },0);
+                }
+            },
+            reset_stack_bar:function(){
+                if(this.date){//传入了时间参数，则按时间对比
+                    $('div.wrapper[data-date='+this.date+'] div.stack_bar_in').css({left:(parseFloat(this.min)/(parseFloat(this.stark_bar_max)-parseFloat(this.stark_bar_min)))*100+((parseFloat(this.max)-parseFloat(this.min))/(parseFloat(this.stark_bar_max)-parseFloat(this.stark_bar_min)))*100/2+'%','width':0,transition:''});
+                    $('div.wrapper[data-date='+this.date+'] div.stack_bar_in').css({left:0,width:0,transition:''});
+                }else{
+                    $('div.wrapper[data-key='+this.key+'] div.stack_bar_in').css({left:(parseFloat(this.min)/(parseFloat(this.stark_bar_max)-parseFloat(this.stark_bar_min)))*100+((parseFloat(this.max)-parseFloat(this.min))/(parseFloat(this.stark_bar_max)-parseFloat(this.stark_bar_min)))*100/2+'%','width':0,transition:''});
+                    $('div.wrapper[data-key='+this.key+'] div.stack_bar_in').css({left:0,width:0,transition:''});
+                }
+            }
+        },
+        events:{
+            load_stack_bar:function(){
+//                this.load_stack_bar();
+            },
+            reset_stack_bar:function(){
+//                this.reset_stack_bar();
+            },
+        },
+        props:['stark_bar_max','stark_bar_min','min','max','avg','median','key','name','is_collapse','curr_param_tab','date'],
+    });
+</script>

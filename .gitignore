@@ -1,0 +1,24 @@
+# Windows:
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+#svngit:
+.svn
+.git
+
+
+#ide:
+.idea/*
+
+
+#log:
+*.log
+
+#test/*.json
+dist/*
+node_modules/*
+*.rar
+*.zip
+
+map.json

@@ -1,0 +1,293 @@
+<style>
+    div[data-mapName]>div:first-child{
+        background-color: #eef1fb;
+    }
+    div[data-mapName] div.tooltip_panel{
+        background-color: #fff;
+    }
+    div[data-mapName] div.tooltip_panel *{
+        font-size:12px;
+        color:#3b404f;
+    }
+    div[data-mapName] div:not(.bottom_info){
+        /*background-color: #eef1fb;*/
+    }
+    div.bottom_info{
+        clear: both;
+        border-top: 1px solid #bcc6ef;
+        padding-top: 5px;
+    }
+    div.tooltip_body{
+        margin: 0 auto;
+    }
+    div.bottom_info p span:first-child{
+        margin-right:10px;
+    }
+    div.tooltip_body:after{
+        display: block;
+        content:'';
+        clear: both;
+    }
+    div.bottom_info:after{
+        content:'';
+        display:inline-block;
+        position:absolute;
+        width:1rem;
+        height:1rem;
+        background-color: #fff;
+        bottom:-0.5rem;
+        left:47%;
+        transform: rotate(45deg) scale(1) !important;
+        box-shadow: 1px 1px 0 0 #bababc;
+        z-index:2;
+    }
+    ul span.mp_icon.humidity_scatter{
+        background-position:-75px -106px;
+    }
+    ul span.mp_icon.temperature_scatter{
+        background-position:-50px -106px;
+    }
+    ul span.mp_icon.compliance{
+        background-position:-25px -106px;
+    }
+    ul.lf{
+        margin-right:5px;
+        text-align: center;
+        padding:5px 0 0 0;
+        background-color: #f0f1f4;
+    }
+    ul.lf li:first-child{
+        height:25px;
+        line-height: 25px;
+    }
+    ul.lf li{
+        padding:5px;
+    }
+    ul.lf li:last-child{
+        background-color: #fff;
+    }
+    ul span.mp_icon{
+        display: inline-block;
+        width:25px;
+        height:25px;
+        background: url(__uri("/regional_center/images/icons.png")) no-repeat;
+    }
+</style>
+<template id="map_chart">
+    <div :id="tab_name+'_map_chart'" data-mapName>
+
+    </div>
+</template>
+<script>
+    var data_cn_name={
+        compliance:'达标率',
+        temperature_scatter:'温度离散系数',
+        humidity_scatter:'湿度离散系数'
+    };
+    var check_val = function(val){
+        if(val){
+            return val;
+        }else{
+            return '-';
+        }
+    };
+    var map_default = {
+        tooltip:{
+            show:true,
+            trigger:'item',
+            backgroundColor:'#ffffff',
+            //alwaysShowContent:true,
+            position:'top',
+            formatter:function(params){
+                var result_str = '';
+                if(params.componentType == 'series'){
+                    var tooltip_data = params.data.tooltip_data;
+                    if(tooltip_data&&tooltip_data.length==1){//多馆对比
+                        result_str = '<div class="tooltip_panel"><span>' +params.name+ '</span><br/><div class="tooltip_body lf">';
+                        for(var key in tooltip_data[0]){
+                            if(key!='is_value_abnormal'&&key!='is_wave_abnormal'){
+                                result_str += '<ul class="lf"><li><span class="mp_icon '+key+'"></span></li><li>'+data_cn_name[key]+'</li><li>'+check_val(tooltip_data[0][key])+'</li></ul>';
+                            }
+                        }
+                        result_str +='</div><div class="bottom_info"><p><span>是否有日波动超标情况：'+tooltip_data[0].is_wave_abnormal+'</span>' +
+                                '<span>是否有异常值：'+tooltip_data[0].is_value_abnormal+'</span></p></div></div>';
+                    }
+                    if(tooltip_data&&tooltip_data.length==2){//按时间对比
+                        $.each(tooltip_data,function(i,n){
+                            result_str += '<div class="tooltip_panel"><span>' + n.date + '</span><br/><div class="tooltip_body lf">';
+                            for(var key in n){
+                                if(key!='is_value_abnormal'&&key!='is_wave_abnormal'&&key!='date'){
+                                    result_str += '<ul class="lf"><li><span class="mp_icon '+key+'"></span></li><li>'+data_cn_name[key]+'</li><li>'+check_val(n[key])+'</li></ul>';
+                                }
+                            }
+                            result_str +='</div><div class="bottom_info"><p><span>是否有日波动超标情况：'+n.is_wave_abnormal+'</span>' +
+                                    '<span>是否有异常值：'+n.is_value_abnormal+'</span></p></div></div>';
+                        });
+                    }
+                }
+                return result_str;
+            },
+            textStyle:{
+                color:'#5d6277'
+            },
+            borderColor:'#c9c9c9',
+            borderWidth:1,
+            padding:[5,10],
+            extraCssText:'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);',
+            enterable:true
+        },
+        geo:{
+            type: 'map',
+            map: '',
+            roam: true,
+            scaleLimit:{
+                max:5,
+                min:1
+            },
+            label:{
+                normal:{
+                    show:false
+                },
+                emphasis:{
+                    show:false
+                }
+            },
+            itemStyle:{
+                normal:{
+                    areaColor:'#acaee6',
+                    borderColor:'#ffffff'
+                },
+                emphasis:{
+                    areaColor:'#acaee6',
+                    borderColor:'#ffffff',
+                }
+            },
+        },
+        series: [{
+            type: 'scatter',
+            symbol:'pin',
+            coordinateSystem: 'geo',
+            symbolSize: [30,35],
+            label: {
+                normal: {
+                    show: false
+                },
+                emphasis: {
+                    show: false
+                }
+            },
+            itemStyle: {
+                normal:{
+                    color:'#6a6cd1'
+                },
+                emphasis: {
+
+                }
+            },
+            data:[]
+        }]
+    };
+
+    function calc_map_size(){
+        const MAIN_HEIGHT = $('#app section').height();
+        var ch = MAIN_HEIGHT - 70 - 83;
+        $('.right>div.wrapper>div:first-child').css('height',ch+'px');
+    }
+
+    Vue.component('map-chart',{
+        template:'#map_chart',
+        data:function(){
+            return {
+                map_chart:{},
+            }
+        },
+        ready:function(){
+            var me = this;
+            calc_map_size();
+            this.map_chart = echarts.init(document.getElementById(this.tab_name+'_map_chart'));
+            $(window).resize(function(){
+                if(me.$el){
+                    calc_map_size();
+                    if(me.map_chart&&!me.map_chart._disposed){
+                        me.map_chart.resize();
+                    }
+                }
+            });
+        },
+        methods:{
+            init_map_chart:function(data){//初始化地图
+                if(!data){
+                    return;
+                }
+                var me = this,
+                    copy_option = {};
+                this.map_chart = echarts.init(document.getElementById(this.tab_name+'_map_chart'));
+//                this.map_chart.on('click',function(params){/*为地图绑定按键事件*/
+//                    if(params.componentType=='series'){
+//                        alert('跳转到'+params.name+'详情页');
+//                    }
+//                });
+                for(var key in map_default){
+                    copy_option[key] = map_default[key];
+                }
+                copy_option.series[0].data=[];
+                me.geo_data=[];
+                if(Array.isArray(data.data)&&data.data.length!=0){
+                    $.each(data.data,function(i,n){
+                        if(n.list){
+                            copy_option.series[0].data.push({
+                                name: n.name,
+                                value: n.grid,
+                                tooltip_data: n.list
+                            });
+                        }
+                    });
+                }else if(data.data){
+                    copy_option.series[0].data.push({
+                        name: data.data.name,
+                        value: data.data.grid,
+                        tooltip_data: data.data.list
+                    });
+                }
+                if(data=='[]'){
+                    data={
+                        map_name:'china'
+                    };
+                }
+                $.get(__uri('/js/map/'+data.map_name+'.json'),function(_map){
+                    echarts.registerMap(data.map_name,_map);
+                    copy_option.geo.map = data.map_name;
+                    me.map_chart.clear();
+                    me.map_chart.setOption(copy_option);
+                });
+            }
+        },
+        props:['tab_name'],
+        events:{
+            resize:function(){
+                var me = this;
+                if(this.$el){
+                    calc_map_size();
+                    setTimeout(function(){
+                        if(me.map_chart&&!me.map_chart._disposed){
+                            me.map_chart.resize();
+                        }
+                    },0);
+                }
+            },
+            init_map_chart:function(tab_name,data){
+                if(tab_name==this.tab_name){
+                    this.init_map_chart(data);
+                }else{
+                    alert('地图加载错误');
+                }
+            },
+            no_museum_map:function(map_name){
+                this.init_map_chart({
+                    map_name:map_name,
+                    data:[]
+                });
+            }
+        }
+    });
+</script>

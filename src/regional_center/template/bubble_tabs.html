@@ -1,0 +1,81 @@
+<style>
+    ul.bubble_tabs:after{
+        display: block;
+        content:'';
+        clear: both;
+    }
+    ul.bubble_tabs li.lf{
+        margin: 0 10px 0 10px;
+        position: relative;
+    }
+    /*ul.bubble_tabs li.lf span.bubble_arraw{*/
+        /*display: block;*/
+        /*width:18px;*/
+        /*height:7px;*/
+        /*position: absolute;*/
+        /*bottom:-6px;*/
+        /*left:41%;*/
+        /*background:url(__uri("/regional_center/images/icons.png")) no-repeat -193px 0;*/
+    /*}*/
+    ul.bubble_tabs li.lf div{
+        color:#3b404f;
+        font-size: 14px;
+        padding:10px 20px 10px 20px;
+        border:1px solid #b2b7c6;
+        border-radius:3px;
+        cursor: pointer;
+    }
+    ul.bubble_tabs li.lf div.active{
+        background-color:#dde2f7;
+        color:#6a6cd1;
+    }
+</style>
+<template id="bubble_tabs">
+    <div>
+        <ul class="bubble_tabs">
+            <li class="lf" v-for="data in tabs_data">
+                <div v-if="sel_params&&sel_params.length!=0" @click="toggle_bubble_tabs(data.key)" :class="{'active':active_key==data.key}" v-show="sel_params.indexOf(data.key)!=-1||sel_params.indexOf(data.key.slice(0,-8))!=-1||data.key=='standard_scatter'">{{data.text}}</div>
+                <!--<span class="bubble_arraw" v-show="active_key==data.key"></span>-->
+            </li>
+        </ul>
+    </div>
+</template>
+<script>
+    Vue.component('bubble-tabs',{
+        template:'#bubble_tabs',
+        data:function(){
+            return {
+                active_key:'',
+                check_result:false,//保存检查结果
+            }
+        },
+        ready:function(){
+            if(!this.active_key&&this.tabs_data&&this.tabs_data.length!=0){
+                this.active_key = this.tabs_data[0].key;
+                this.$dispatch('init_bubble_tab',this.active_key);
+            }
+        },
+        methods:{
+            toggle_bubble_tabs:function(key){
+                this.active_key = key;
+                this.$dispatch('change_bubble_tab',key);
+            },
+            check_bubble_tabs:function(key,tab_name){
+                if(tab_name==this.tab_name){
+                    if(tab_name=='overview'&&this.sel_params.indexOf(this.active_key.slice(0,-8))==-1){
+                        this.active_key = this.tabs_data[0].key;
+                    }else if(tab_name=='detail'&&this.sel_params.indexOf(this.active_key)==-1){
+                        this.active_key = this.sel_params[0];
+                    }
+                    this.$dispatch('change_bubble_tab',this.active_key);
+                }
+            }
+        },
+        events:{
+            check_bubble_tabs:function(key,tab_name){
+                this.check_bubble_tabs(key,tab_name);
+            }
+        },
+        props:['tabs_data','sel_params','tab_name']
+    })
+</script>

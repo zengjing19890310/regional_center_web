@@ -1,0 +1,12 @@
+<div id="left_slide" @mouseenter="showSlider(true)" @mouseleave="showSlider(false)">
+    <ul class="module">
+        <li @mouseenter="slider(0)"><a class="capsule" href="../capsule">智能囊匣</a></li>
+        <li @mouseenter="slider(1)"><a class="monitoring" href="../capsule/#!/environment">环境监控</a></li>
+        <li @mouseenter="slider(2)"><a class="relic_" href="../capsule/#!/relic">文物管理</a></li>
+        <li @mouseenter="slider(3)"><a class="equipment" href="../capsule/#!/equip">设备管理</a></li>
+
+        <li @click="fixed" class="fixed"><span :class="{'active':!classKey}">边栏固定</span></li>
+        <div class="slider"></div>
+    </ul>
+    <div class="btn"></div>
+</div>

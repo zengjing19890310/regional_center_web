@@ -1,0 +1,137 @@
+<div class="panel panel-default active" id="monitor_box">
+
+    <div class="panel-heading env_icon">
+        <div class="img_btn"></div>
+        <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1"
+               aria-expanded="false" class="collapsed">环境监控</a>
+        </h4>
+    </div>
+
+    <div id="collapse1" class="panel-collapse collapse in">
+        <div class="panel-body">
+            <div class="area_lister">
+
+                <div class="toggle_box">
+                    <span class="small_area active">小环境</span>
+                    <span class="equip">设备</span>
+                </div>
+
+                <div class="area_content">
+                    <div class="row_name"><p>环境达标率</p></div>
+                    <div class="echarts_box">
+                        <div id="gauge_chart" class="dashboard active">
+
+                        </div>
+                        <div id="radar_chart" class="radar">
+
+                        </div>
+                    </div>
+                    <div class="row_name"><p>均峰值</p></div>
+                    <p class="switching">
+                        <span data-param="temperature" class="active">温度</span>
+                        <span data-param="humidity">湿度</span>
+                    </p>
+                    <div class="timeLine">
+                        <div class="now_time"><span></span><span>24小时</span></div>
+                        <div class="time_wrap"><div class="shadow"></div><p class="time_box"><span data-time="24h" class="active">24小时</span><span data-time="yesterday">昨天</span><span data-time="today">今天</span><span data-time="week">本周</span><span data-time="month">本月</span></p></div>
+                    </div>
+                    <table class="temper_view">
+                        <thead>
+                        <tr>
+                            <td width="91">名称</td>
+                            <td width="112">极大<span v-text="'('+unit+')'"></td>
+                            <td width="104">极小<span v-text="'('+unit+')'"></td>
+                            <td width="104">平均<span v-text="'('+unit+')'"></td>
+                            <td width="106">标准差<span class="tooltip"></span></td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="item in poles_list">
+                            <td v-show="item.name=='本层'" v-text="item.name">
+                            </td>
+                            <td v-show="item.type=='展柜'">
+                                <a href="../cabinet?env_no={{item.env_no}}" v-text="item.name" :data-title="item.name"></a>
+                            </td>
+                            <td v-show="item.type=='展厅'">
+                                <a href="../hall?env_no={{item.env_no}}" v-text="item.name" :data-title="item.name"></a>
+                            </td>
+                            <td v-show="item.type=='库房'">
+                                <a href="../hall?env_no={{item.env_no}}" v-text="item.name" :data-title="item.name"></a>
+                            </td>
+                            <td v-show="item.type=='存储柜'">
+                                <a href="../cabinet?env_no={{item.env_no}}" v-text="item.name" :data-title="item.name"></a>
+                            </td>
+                            <td><span v-text="item.max"></span></span></td>
+                            <td><span v-text="item.min"></span></span></td>
+                            <td><span v-text="item.average"></span></span></td>
+                            <td v-text="item.SD"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <!--div class="row_name">标量场显示</div>
+                    <div class="scalar"><span class="small_area">温度场</span><span class="equip">湿度场</span></div-->
+                </div>
+
+                <div class="equip_content">
+                    <div class="row_name"><p>设备运行状况</p></div>
+                    <div class="information">
+                        <div class="line">
+                            <p><span v-bind:style="{width:100*(normal_total/sensor_total)+'%'}"></span></p>
+                            <div class="edges_div" v-bind:style="{left:50*(normal_total/sensor_total)+'%'}">
+                                正常<span class="num" v-text="normal_total"></span>个
+                            </div>
+                            <div class="edges_div" v-bind:style="{right:50*(abnormal_total/sensor_total)+'%'}">
+                                异常<span class="num" v-text="abnormal_total"></span>个
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row_name">
+                        <p>设备列表</p>
+                    </div>
+                    <form>
+                        <div>
+                            <input type="text" placeholder="请输入你要查找的设备" v-model="searchTxt" @keydown.enter.stop.prevent="search">
+                            <i class="icon iconfont">&#xe614;</i>
+                        </div>
+                        <div>
+                            <div class="filter">
+                                <div class="font">类别
+                                    <ul>
+                                        <li v-for="type in chooce" v-text="type" @click.stop="addChooce(type)"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <i class="icon iconfont">&#xe650;</i>
+                        </div>
+                    </form>
+                    <div class="row_name">
+                        <p class="p_detail">共 <span v-text="env_sensor_total"></span> 个设备　
+                            <template v-if="filter_num>=0">
+                                <span v-text="filter_num"></span>个符合筛选
+                            </template>　
+                            
+                        </p>
+                    </div>
+                    <p class="fliter_box">
+                        <span v-for="type in condition" v-text="type" @click="removeChooce(type)"></span>
+                    </p>
+                    <div class="equip_overview">
+                        <div class="data_view small" v-show="small_env_sensor_list.length">
+                            <p class="title">小环境</p>
+                            <span v-for="item in small_env_sensor_list">
+                                <a href="../equip?equip_no={{item.equip_no}}" data-title="{{item.name}}" :style="{color:check_status(item.status)}">{{item.name}}</a>
+                            </span>
+                        </div>
+                        <div class="data_view micro" v-show="micro_env_sensor_list.length">
+                            <p class="title">微环境</p>
+                            <span v-for="item in micro_env_sensor_list" >
+                                <a href="../equip?equip_no={{item.equip_no}}" data-title="{{item.name}}":style="{color:check_status(item.status)}">{{item.name}}</a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,220 @@
+/* http://meyerweb.com/eric/tools/css/reset/ */
+/* v1.0 | 20080212 */
+[v-cloak]{
+    display: none;
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    vertical-align: baseline;
+    background: transparent;
+    color:#51576d;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+
+/* remember to define focus styles! */
+:focus {
+    outline: 0;
+}
+
+/* remember to highlight inserts somehow! */
+ins {
+    text-decoration: none;
+}
+del {
+    text-decoration: line-through;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+*{
+    box-sizing: border-box;
+}
+
+body{
+    overflow-y:hidden;
+    font-size: 12px;
+}
+
+h1{
+    margin-top:100px;
+}
+
+.lf{
+    float:left;
+}
+.rf{
+    float:right;
+}
+.expand-transition{
+    transition: all .15s linear;
+}
+/* .expand-enter 定义进入的开始状态 */
+/* .expand-leave 定义离开的结束状态 */
+.expand-enter, .expand-leave {
+    opacity: 0;
+}
+/*滚动条样式*/
+/*防止整个页面外围,因浏览器宽,高不够而出现滚动条*/
+/*div#content div::-webkit-scrollbar{*/
+/*width:0;*/
+/*height:0;*/
+/*}*/
+/*滚动条整体部分*/
+::-webkit-scrollbar{
+    background-color:transparent;
+    width:10px;
+    height:10px;
+}
+::-webkit-scrollbar:hover{
+    background-color:#ddd;
+}
+/*滚动条两端的按钮,允许通过点击微调小方块的位置*/
+::-webkit-scrollbar-button{
+
+}
+/*滚动条的轨道(里面装有thumb)*/
+::-webkit-scrollbar-track{
+
+}
+/*内层轨道，滚动条中间部分(除去)*/
+::-webkit-scrollbar-track-piece{
+
+}
+/*滚动条里面的小方块，能上下左右移动(取决于是垂直滚动条还是水平滚动条)*/
+::-webkit-scrollbar-thumb{
+    background:rgba(188,198,239,.75);
+    width:10px;
+    height:10px;
+    border-radius: 5px;
+}
+/*边角，及两个滚动条的交汇处*/
+::-webkit-scrollbar-corner{
+    opacity: 0;
+}
+/*两个滚动条的交汇处上用于通过拖动调整元素大小的小控件*/
+::-webkit-resizer{
+    opacity: 0;
+}
+
+*{
+    list-style: none;
+    box-sizing: border-box;
+    margin:0;
+    padding:0;
+    font-family: "Microsoft YaHei";
+}
+/*容器样式设置*/
+div.app{
+    margin-top:83px;
+    position: relative;
+}
+div.app>aside{
+    width:200px;
+    position: absolute;
+    top:0;
+    left:0;
+    background-color:#484d5e;
+}
+div.app>aside ul>li{
+    position: relative;
+}
+div.app>aside ul>li>a{
+    font-size: 16px;
+    /*padding-left:20px;*/
+    display: block;
+    height:96px;
+    line-height:96px;
+    color:#8691b7;
+    text-align: center;
+    border-left:3px solid transparent;
+    position: relative;
+}
+div.app>aside ul>li>a.active{
+    color:#fff;
+}
+div.app>aside ul>li>a:hover,div.app>aside ul>li>a.active{
+    border-left-color:#7b7de5;
+    background-color:#51576d;
+    text-decoration: none;
+}
+div.app>section{
+    margin-left:200px;
+    padding-left:15px;
+    overflow: scroll;
+    background-color:#f0f1f4;
+}
+b.icon{
+    display: inline-block;
+    width:26px;
+    height:30px;
+    position: absolute;
+    top:33px;
+    left:30px;
+    background:url('../images/icons.png') no-repeat;
+}
+a>b.icon.detail{
+    background-position: -26px 0;
+}
+a.active>b.icon.detail{
+    background-position: 0 0;
+}
+a>b.icon.overview{
+    background-position: -27px -37px;
+}
+a.active>b.icon.overview{
+    background-position: 0 -37px;
+}
+a>b.icon.compare{
+    background-position: -27px -72px;
+}
+a.active>b.icon.compare{
+    background-position: 0 -72px;
+}
+a>b.icon.report{
+    background-position: -27px 0;
+}
+a.active>b.icon.report{
+    background-position: 0 0;
+}
+b.icon.detail{
+    background-position: -24px 0;
+}
+.compare_num{
+    border-radius:11px;
+    padding:  2px 13px;
+    background-color:#7b7fe3;
+    color:#fff;
+    font-size:12px;
+    position: absolute;
+    right:15px;
+    top:40px;
+}

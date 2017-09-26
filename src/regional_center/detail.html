@@ -1,0 +1,389 @@
+<!--区域详情模板-->
+<template id="detail">
+    <div class="content">
+        <fixed-top></fixed-top>
+        <div id="main">
+            <div class="ui top attached tabular menu">
+                <div v-for="(key,tab) in tabs" @click="toggle_tabs(key)" class="item" :class="{'active':key==tab_name}">
+                    <p>
+                        {{tab}}
+                    </p>
+                    <!--<b class="arrow" v-show="key==tab_name"></b>-->
+                </div>
+            </div>
+            <div class="ui bottom attached active tab segment">
+                <div v-show="tab_name=='area'">
+                    <div class="area_container">
+                        <div class="left">
+                            <!--达标率-->
+                            <div class="wrapper" :class="">
+                                <pie-chart id="pie_compliance" :tab_name="tab_name">
+                                    达标率
+                                </pie-chart>
+                                <!--<i id="pie_compliance_tips" class="tips_mark"></i>-->
+                            </div>
+                            <!--温度离散系数-->
+                            <div class="wrapper" :class="">
+                                <pie-chart id="pie_scatter_temperature" v-show="sel_params.indexOf('temperature')!=-1" :tab_name="tab_name">
+                                    温度离散系数
+                                </pie-chart>
+                                <i id="pie_scatter_temperature_tips" class="tips_mark"></i>
+                            </div>
+                            <!--湿度离散系数-->
+                            <div class="wrapper" :class="">
+                                <pie-chart id="pie_scatter_humidity" v-show="sel_params.indexOf('humidity')!=-1" :tab_name="tab_name">
+                                    湿度离散系数
+                                </pie-chart>
+                                <i id="pie_scatter_humidity_tips" class="tips_mark"></i>
+                            </div>
+                        </div>
+
+                        <div class="right">
+                            <div class="info">
+                                <p>
+                                    共 <b>{{statistic_info.total}}</b> 家博物馆<br/>
+                                    <!--已显示 <b>{{statistic_info.show}}</b> 家博物馆, <br/>-->
+                                    <!--显示比例：<b v-show="statistic_info.total">{{((statistic_info.show/statistic_info.total)*100).toFixed(2)}}%</b>-->
+                                </p>
+                            </div>
+                            <div class="wrapper">
+                                <!--<div id="map_chart">-->
+
+                                <!--</div>-->
+                                <map-chart :tab_name="tab_name">
+
+                                </map-chart>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-show="tab_name=='overview'">
+                    <div class="overview_container">
+                        <div class="overview_tabs_search">
+                            <div class="left_tabs lf">
+                                <!--数据需要根据所选参数筛选一次-->
+                                <bubble-tabs :tabs_data="tabs_data_overview" :sel_params="sel_params" tab_name="overview"></bubble-tabs>
+                            </div>
+                            <div class="right_search lf">
+                                <div class="ui icon input">
+                                    <input type="text" placeholder="搜索博物馆名称..." v-model="search_bar_name" @keyup="search_museum_overview">
+                                    <i class="search icon link" @click="search_museum_overview"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="statistics_info">
+                            <div class="top_info">
+                                <p v-if="curr_info_data" >该区域博物馆共{{curr_info_data.all}}家</p>
+                            </div>
+                            <div class="info_body" v-show="statistics_show" transition="expand">
+                                <!--<b>这里显示的是框内的信息</b>-->
+                                <div class="compare_info">
+                                    <div class="compare_avg_container">
+                                        <div class="compare_avg_bar_bg lf" :class="{'reverse':curr_type_tab=='temperature_scatter'||curr_type_tab=='humidity_scatter'}">
+                                            <span class="text lt lf">低</span>
+                                            <div class="value_bar lf">
+                                                <div class="lt_bar lf" :style="{width:'50%'}" v-if="curr_info_data">{{curr_info_data.less}}家</div>
+                                                <div class="gt_bar lf" :style="{width:'50%'}" v-if="curr_info_data">{{curr_info_data.more}}家</div>
+                                                <div class="avg_line" :style="{left:'50%'}">
+                                                    <i class="avg_arrow"></i>
+                                                    <p class="avg_value" v-if="curr_info_data">平均数：{{(curr_info_data.average*100).toFixed(2)+'%'}}</p>
+                                                    <p class="eq_avg" v-if="curr_info_data">{{curr_info_data.equal}} 家</p>
+                                                </div>
+                                            </div>
+                                            <span class="text gt rf">高</span>
+                                        </div>
+                                        <div class="compare_avg_info">
+                                            <p class="lf" v-if="curr_info_data">标准差:{{(curr_info_data.standard*100).toFixed(2)+'%'}}</p>
+                                            <p class="lf" v-if="curr_info_data" >
+                                                数据表现较差的有: <span v-for="data in curr_info_data.attention">data</span>
+                                                <i id="type_help" class="question_mark">
+
+                                                </i>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p class="no_data_count lf">
+                                        暂无数据 : <span v-if="curr_info_data">{{curr_info_data.nodata}}</span>家
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="slide_button_container">
+                                    <span @click="slide_toggle_statistics_info" :class="{'open':statistics_show}">
+                                        <i class="slide_button"></i>
+                                        {{statistics_show_msg}}分析结果
+                                    </span>
+                            </div>
+                        </div>
+                        <div class="museum_table overview">
+                            <div class="table header">
+                                <div class="tr">
+                                    <div class="th">博物馆名称</div>
+                                    <div class="th can_order">
+                                        <div>
+                                            博物馆数据详情
+                                            <span class="order_icon asc" :class="{'active':bar_order=='asc'}" @click="sort_data_bar('asc')"></span>
+                                            <span class="order_icon desc" :class="{'active':bar_order=='desc'}" @click="sort_data_bar('desc')"></span>
+                                        </div>
+                                        <p class="avg_value">
+                                            区域平均: <span>{{(bar_avg*100).toFixed(2)+'%'}}</span>
+                                        </p>
+                                    </div>
+                                    <div class="no_title">
+
+                                    </div>
+                                    <div class="th can_order">
+                                        <div>
+                                            与平均数距离
+                                            <span class="order_icon asc" :class="{'active':distance_order=='asc'}" @click="sort_data_distance('asc')"></span>
+                                            <span class="order_icon desc" :class="{'active':distance_order=='desc'}" @click="sort_data_distance('desc')"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table" v-for="(index,data) in filtered_bar_data" :data-key="data.key" transition="expand_table">
+                                <div class="tr">
+                                    <div class="td">
+                                        <span class="museum_pic">
+
+                                        </span>
+                                        <p>{{data.name}}</p>
+                                    </div>
+                                    <div class="td bar_chart">
+                                        <bar-chart :bar_data="data.data" :avg_data="bar_avg" :max="bar_max" :min="bar_min" :bar_key="index" :type="curr_type_tab" v-if="data.data&&data.data!==0"></bar-chart>
+                                        <div v-else style="font-size:14px;color:#51576d;text-align: center;line-height:60px;">
+                                            暂无数据
+                                        </div>
+                                    </div>
+                                    <div class="no_title">
+                                        <!--{{(data.data*100).toFixed(2)+'%'}}-->
+                                        {{data.empty?'':(data.data*100).toFixed(2)+'%'}}
+                                    </div>
+                                    <div class="td">
+                                        <span v-if="data.distance>0">高于{{(Math.abs(data.distance)*100).toFixed(2)+'%'}}</span>
+                                        <span v-if="data.distance<0">低于{{(Math.abs(data.distance)*100).toFixed(2)+'%'}}</span>
+                                        <span v-if="data.distance==0">等于</span>
+                                        <span v-if="data.empty">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-show="tab_name=='detail'">
+                    <div class="detail_container">
+                        <div class="detail_tabs_search">
+                            <div class="left_tabs lf">
+                                <bubble-tabs :tabs_data="tabs_data_detail" :sel_params="sel_params" tab_name="detail"></bubble-tabs>
+                            </div>
+                            <div class="right_search lf">
+                                <div class="ui icon input">
+                                    <input type="text" placeholder="搜索博物馆名称..." v-model="search_stack_bar_name" @keyup="search_museum_detail">
+                                    <i class="search icon link" @click="search_museum_detail"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="texture_list">
+                            <tbody>
+                            <tr v-show="sel_env!='hall' && curr_param_tab=='humidity'">
+                                <td v-for="data in humidity_tabs_texture" :class="{'active':curr_humidity_texture==data.text}" @click="choose_texture(data.text)">
+                                    {{data.text}}
+                                </td>
+                            </tr>
+                            <tr v-show="sel_env!='hall' && curr_param_tab=='light'">
+                                <td v-for="data in light_tabs_texture" :class="{'active':curr_light_texture==data.text}" @click="choose_texture(data.text)">
+                                    {{data.text}}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="museum_table detail">
+                            <div class="table header">
+
+                                <!--所有缩略图共用一个容器:id="normal_id" -->
+                                <div class="common_container" @mouseenter="enter_normal" @mouseleave="hide_normal" v-show="show_normal_status" id="common_container">
+
+                                </div>
+
+                                <div class="abnormal_info" v-show="abnormal_status" id="abnormal_info" @mouseenter="in_abnormal" @mouseleave="hide_abnormal">
+                                    <ul v-show="abnormal_list!='[]'&&abnormal_list.length!=0">
+                                        <li v-for="data in abnormal_list.data">
+                                            <b>{{data.val}}{{abnormal_list.unit}}</b><br/>
+                                            <b class="abnormal_equip_no">设备号:{{data.equip_no}}</b><br/>
+                                            <span class="abnormal_date">{{data.date}} {{data.time}}</span>
+                                        </li>
+                                    </ul>
+                                    <ul v-show="wave_abnormal_list!='[]'&&wave_abnormal_list.length!=0">
+                                        <li v-for="data in wave_abnormal_list.data">
+                                            <b>{{data.val}}{{wave_abnormal_list.unit}}</b><br/>
+                                            <b class="abnormal_env_name">环境名称:{{data.env_name}}</b><br/>
+                                            <span class="abnormal_date">{{data.date}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="tr">
+                                    <span class="collapse_icon" @click="table_collapse" :class="{'collapse':is_collapse}">
+
+                                    </span>
+                                    <div class="th m_name">博物馆名称</div>
+                                    <div class="th m_data">
+                                        <div>
+                                            博物馆数据详情
+                                            <div class="legend">
+                                                <span class="icon avg"></span>平均数
+                                                <span class="icon median"></span>中位数
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order">
+                                        <div>
+                                            极差
+                                            <span class="order_icon asc" :class="{'active':stack_bar_order=='distanceasc'}" @click="sort_stack_bar('distance','asc')"></span>
+                                            <span class="order_icon desc" :class="{'active':stack_bar_order=='distancedesc'}" @click="sort_stack_bar('distance','desc')"></span>
+                                            <div class="thumbnail_container">
+                                                <thumbnail-chart small_id="distance"></thumbnail-chart>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order">
+                                        <div>
+                                            达标率
+                                            <span class="order_icon asc" :class="{'active':stack_bar_order=='standard_percentasc'}" @click="sort_stack_bar('compliance','asc')"></span>
+                                            <span class="order_icon desc" :class="{'active':stack_bar_order=='standard_percentdesc'}" @click="sort_stack_bar('compliance','desc')"></span>
+                                            <div class="thumbnail_container">
+                                                <thumbnail-chart small_id="compliance"></thumbnail-chart>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order" v-show="!is_collapse">
+                                        <div>
+                                            <i id="abnormal_help" class="question_mark">
+
+                                            </i>异常值
+                                            <span class="order_icon asc" :class="{'active':stack_bar_order=='count_abnormalasc'}" @click="sort_stack_bar('count_abnormal','asc')"></span>
+                                            <span class="order_icon desc" :class="{'active':stack_bar_order=='count_abnormaldesc'}" @click="sort_stack_bar('count_abnormal','desc')"></span>
+                                            <div class="thumbnail_container">
+                                                <thumbnail-chart  small_id="count_abnormal"></thumbnail-chart>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order" v-show="!is_collapse">
+                                        <div>
+                                            平均数
+                                            <span class="order_icon asc" :class="{'active':stack_bar_order=='averageasc'}" @click="sort_stack_bar('average','asc')"></span>
+                                            <span class="order_icon desc" :class="{'active':stack_bar_order=='averagedesc'}" @click="sort_stack_bar('average','desc')"></span>
+                                            <div class="thumbnail_container">
+                                                <thumbnail-chart  small_id="average"></thumbnail-chart>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order" v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <div>
+                                            标准差
+                                            <span class="order_icon asc" :class="{'active':stack_bar_order=='standardasc'}" @click="sort_stack_bar('standard','asc')"></span>
+                                            <span class="order_icon desc" :class="{'active':stack_bar_order=='standarddesc'}" @click="sort_stack_bar('standard','desc')"></span>
+                                            <div class="thumbnail_container">
+                                                <thumbnail-chart  small_id="standard"></thumbnail-chart>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order wave" v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <div>
+                                            日波动
+                                            <span class="order_icon asc" :class="{'active':stack_bar_order=='waveasc'}" @click="sort_stack_bar('wave','asc')"></span>
+                                            <span class="order_icon desc" :class="{'active':stack_bar_order=='wavedesc'}" @click="sort_stack_bar('wave','desc')"></span>
+                                            <div class="thumbnail_container">
+                                                <thumbnail-chart  small_id="wave"></thumbnail-chart>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="th can_order wave" v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <div>
+                                            <i id="wave_help" class="question_mark">
+
+                                            </i>日波动
+                                            <span class="order_icon asc" :class="{'active':stack_bar_order=='wave_normalasc'}" @click="sort_stack_bar('wave_normal','asc')"></span>
+                                            <span class="order_icon desc" :class="{'active':stack_bar_order=='wave_normaldesc'}" @click="sort_stack_bar('wave_normal','desc')"></span>
+                                            <div class="thumbnail_container">
+                                                <thumbnail-chart small_id="wave_normal"></thumbnail-chart>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="table" v-show="curr_page_data">-->
+                                <!--<div class="tr">-->
+                                    <!--<div class="td">-->
+                                        <!--没有数据！-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <div class="table" v-for="(index,data) in filtered_stack_bar_data" transition="expand_table" @mouseEnter="show_legend(data.mid)" @mouseLeave="hide_legend(data.mid)" v-show="data">
+                                <div class="tr">
+                                    <div class="td m_name">
+                                        <span class="museum_pic">
+
+                                        </span>
+                                        <p>{{data.museum}}</p>
+                                    </div>
+                                    <div class="td m_data">
+                                        <stack-bar :stark_bar_max.sync="stack_bar_max" :stark_bar_min.sync="stack_bar_min" :max="parseFloat(data.max)" :min="data.min" :avg="parseFloat(data.average)" :median="parseFloat(data.middle)" :key="data.mid" :name="data.museum" :is_collapse="is_collapse" :curr_param_tab="curr_param_tab" v-if="!data.empty"></stack-bar>
+                                        <div v-else style="font-size:14px;color:#51576d;text-align: center;line-height:60px;">
+                                            暂无数据
+                                        </div>
+                                    </div>
+                                    <div class="td">
+                                        <span v-if="!data.empty">{{data.distance}}{{curr_param_unit}}</span>
+                                        <span v-else>-</span>
+                                    </div>
+                                    <div class="td">
+                                        <span v-if="!data.empty">{{data.compliance}}%</span>
+                                        <span v-else>-</span>
+                                    </div>
+                                    <div class="td" v-show="!is_collapse">
+                                        <span :class="{'count_abnormal':data.count_abnormal>0}" @mouseenter.stop="show_abnormal($event,data.depid)" @mouseleave.stop="hide_abnormal()" v-if="!data.empty">{{data.count_abnormal}}</span>
+                                        <span v-else>-</span>
+                                    </div>
+                                    <div class="td" v-show="!is_collapse">
+                                        <span v-if="!data.empty">{{data.average}}{{curr_param_unit}}</span>
+                                        <span v-else>-</span>
+                                    </div>
+                                    <div class="td" v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <span v-if="!data.empty">{{data.standard}}{{curr_param_unit}}</span>
+                                        <span v-else>-</span>
+                                    </div>
+                                    <div class="td wave" v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <span v-if="!data.empty&&data.wave&&data.wave.length!=0"  @mouseenter="show_abnormal($event,data.depid,'wave')" @mouseleave="hide_abnormal">
+                                            <b :class="{'status':data.wave[0].status=='1'}">{{data.wave[0].data}}</b> - <b :class="{'status':data.wave[1].status=='1'}">{{data.wave[1].data}}</b>{{curr_param_unit}}
+                                        </span>
+                                        <span v-else>
+                                            -
+                                        </span>
+                                    </div>
+                                    <div class="td wave" v-show="!is_collapse&&(curr_param_tab=='temperature'||curr_param_tab=='humidity')">
+                                        <span v-if="!data.empty&&data.wave_normal&&data.wave_normal.length!=0" @mouseenter="show_abnormal($event,data.depid,'wave_normal')" @mouseleave="hide_abnormal">
+                                            <b :class="{'status':data.wave_normal[0].status=='1'}">{{data.wave_normal[0].data}}</b> - <b :class="{'status':data.wave_normal[1].status=='1'}">{{data.wave_normal[1].data}}</b>{{curr_param_unit}}
+                                        </span>
+                                        <span v-else>
+                                            -
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--遮罩层-->
+        <div class="ui page dimmer" id="detail_dimmer" @click.stop>
+            <div class="dimmer_alert content">
+                <div class="center">
+                    <div class="alert_info">
+                        <p>{{msg}}！</p>
+                        <span class="ok" @click="hide_detail_dimmer">知道了</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

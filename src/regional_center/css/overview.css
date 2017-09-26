@@ -1,0 +1,98 @@
+/*各馆概况功能模块*/
+div.content{
+
+}
+div.content div.title{
+    box-sizing: content-box;
+    font-size: 18px;
+    font-weight: bold;
+    min-height:50px;
+    color:#484d5e;
+    padding-left:30px;
+    background-color: #fff;
+    /*padding:5px 0 5px 0;*/
+}
+div.content div.title span{
+    display: inline-block;
+    margin-top:0;
+    line-height: 47px;
+    color: #484d5e;
+}
+div.content div.museum_container{
+    margin-top:65px;
+    /*margin-bottom:60px;*/
+}
+div.content div.museum_container:after{
+    display: block;
+    content:'';
+    clear: both;
+}
+
+div.content div.museum_container>div.wrapper{
+    float:left;
+    margin: 0 10px 10px 0;
+}
+div.content div.museum_container>div.wrapper>div{
+    width:100%;
+}
+/*计算一个框体的基础宽度为*/
+@media screen and (max-width:1280px){
+    div.content div.museum_container>div.wrapper{
+        width:49%;
+    }
+}
+@media screen and (min-width:1281px){
+    div.content div.museum_container>div.wrapper{
+        width:49%;
+    }
+}
+@media screen and (min-width:1440px){
+    div.content div.museum_container>div.wrapper{
+        width:32%;
+    }
+}
+@media screen and (min-width:1680px){
+    div.content div.museum_container>div.wrapper{
+        width:24%;
+    }
+}
+.fade-transition{
+    transition:all 5s linear;
+    opacity: 1;
+}
+.fade-enter,.fade-leave{
+    opacity: 0;
+}
+#overview_dimmer .dimmer_alert .center .alert_info:before{
+    display: table;
+    content:'';
+    clear: both;
+}
+#overview_dimmer{
+    background-color: rgba(0, 0, 0, 0.5);
+}
+#overview_dimmer .dimmer_alert .center .alert_info{
+    width:280px;
+    height:150px;
+    margin:0 auto;
+    background-color:#fff;
+    border-radius:5px;
+}
+#overview_dimmer .dimmer_alert .center .alert_info p{
+    margin-top: 50px;
+    margin-bottom:25px;
+    font-size: 14px;
+    color:#3b404f;
+}
+#overview_dimmer .dimmer_alert .center .alert_info span.ok{
+    display: inline-block;
+    width:100px;
+    height:30px;
+    line-height: 30px;
+    text-align: center;
+    color:#fff;
+    border-radius:15px;
+    background-color:#6a6cd1;
+    font-size: 14px;
+    cursor:pointer;
+}

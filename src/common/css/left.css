@@ -1,0 +1,74 @@
+
+#left_slide {
+    height: calc(100% - 83px);
+    width: 65px;
+    position: absolute;
+    z-index: 6666;
+    top: 83px;
+    background: #fff;
+    border-right:1px solid #9fa6ac; 
+    left: -66px;
+}
+.module{
+    text-align: center;
+    overflow: hidden;
+}
+.module li{
+    list-style: none;
+    height: 83px;
+    border-bottom:1px solid #9fa6ac;
+    font-size: 12px;
+    color: #647481;
+    position: relative;
+}
+.module li:not(:first-child){
+    margin-top: -1px;
+}
+.module li a,.module li span{
+    display: block;
+    padding:57px 0 14px 0;
+    font-size: 12px;
+    color: #647481;
+    background: url('../images/left_menu.png') no-repeat 0 -3px;
+}
+.module li a.monitoring{
+    background-position-x:-64px; 
+}
+.module li a.relic_{
+    background-position-x:-127px; 
+}
+.module li a.equipment{
+    background-position-x:-192px; 
+}
+.slider{
+    background: #bce8b7;
+    border: 0;
+    width: 65px;
+    height: 84px;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+}
+.module li.fixed{
+    position: absolute;
+    cursor: pointer;
+    width: 100%;
+    bottom: 114px;
+    border: 0;
+}
+.module li.fixed span{
+    background-position-x: -256px;
+}
+.module li.fixed span.active{
+    background-position-x: -320px;
+}
+#left_slide .btn{
+    width: 17px;
+    height: 110px;
+    position: absolute;
+    right: -17px;
+    background: url('../images/lfcon.png') no-repeat;
+    top: 50%;
+    cursor: pointer;
+    margin-top: -55px;
+}

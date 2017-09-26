@@ -1,0 +1,252 @@
+<style>
+    .small_chart{
+        position:absolute;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        background-color:transparent;
+    }
+    .small_chart>div{
+        background-color:transparent;
+    }
+    .small_chart canvas{
+        cursor:pointer;
+    }
+</style>
+<template id="thumbnail_chart">
+    <div class="wrapper">
+        <div :id="small_id" class="small_chart" @mouseenter="show_normal($event)" @mouseleave="hide_normal"></div>
+    </div>
+</template>
+<script>
+    //全局注册组件
+    Vue.component('thumbnail-chart',{
+        template:'#thumbnail_chart',
+        data:function(){
+            return {
+                timer:null,
+                thumbnail_default:{
+//                    color: ['#aab2cc'],
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true,
+                        show:false
+                    },
+                    legend:{
+                        show:false,
+                        data:[]
+                    },
+                    xAxis : [
+                        {
+                            type : 'category',
+                            data : [],
+                            axisLine:{
+                                show:false
+                            },
+                            splitLine:{
+                                show:false
+                            },
+                            axisTick:{
+                                show:false
+                            },
+                            silent:true
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value',
+                            axisLine:{
+                                show:false
+                            },
+                            splitLine:{
+                                show:false
+                            },
+                            silent:true
+                        }
+                    ],
+                    series : [],
+                    silent:true
+                },
+                small_chart:false,
+                no_data:true,
+                no_data_info:'无数据'
+            }
+        },
+        ready:function(){
+            var me = this;
+            if(this.small_id){
+                this.small_chart = echarts.init(document.getElementById(this.small_id));
+            }
+        },
+        computed:{
+            cn_name:function(){
+                if(this.small_id=='distance'){
+                    return '极差';
+                }else if(this.small_id=='compliance'){
+                    return '达标率';
+                }else if(this.small_id=='count_abnormal'){
+                    return '异常值';
+                }else if(this.small_id=='average'){
+                    return '均值';
+                }else if(this.small_id=='standard'){
+                    return '标准差';
+                }else if(this.small_id=='wave'){
+                    return '日波动';
+                }else if(this.small_id=='wave_normal'){
+                    return '剔除异常的日波动';
+                }
+            }
+        },
+        methods:{
+            show_normal:function(e){
+                if(!this.no_data) {
+                    this.$dispatch('show_normal', this.small_id);
+                }
+            },
+            hide_normal:function(){
+                if(!this.no_data){
+                    this.$dispatch('hide_normal',this.small_id);
+                }
+            },
+            init_small:function(chart,option_obj,data,unit){
+                var small_option = {},me=this;
+                for(var key in option_obj){
+                    if(option_obj.hasOwnProperty(key)){
+                        small_option[key] = option_obj[key];
+                    }
+                }
+                small_option.series=[];
+                //调整缩略图选项
+                small_option.grid={
+                    top:1,
+                    bottom:1,
+                    left:0,
+                    right:0
+                };
+                if(data.xdata&&data.xdata.length!=0){
+                    small_option.legend.data = data.xdata;
+                    if(data['y'+this.small_id]&&data['y'+this.small_id].length!=0){
+                        $.each(data.xdata,function(i,n){
+                            if(data['y'+me.small_id].base&&data['y'+me.small_id].add[i]){
+                                small_option.series.push({
+                                    name:n,
+                                    type: 'bar',
+                                    stack:  n,
+                                    itemStyle: {
+                                        normal: {
+                                            barBorderColor: 'rgba(0,0,0,0)',
+                                            color: 'rgba(0,0,0,0)'
+                                        },
+                                        emphasis: {
+                                            barBorderColor: 'rgba(0,0,0,0)',
+                                            color: 'rgba(0,0,0,0)'
+                                        }
+                                    },
+                                    data: [{
+                                        name:me.cn_name,
+                                        value:data['y'+me.small_id].base[i]
+                                    }],
+                                    silent:true,
+                                    barMaxWidth:'20%'
+                                });
+                                small_option.series.push({
+                                    name: n,
+                                    type: 'bar',
+                                    stack: n,
+                                    itemStyle: {
+                                        normal: {
+                                            color: '#aab2cc'
+                                        },
+                                    },
+                                    data: [{
+                                        name:me.cn_name,
+                                        value:data['y'+me.small_id].add[i]
+                                    }],
+                                    silent:true,
+                                    barMaxWidth:'20%'
+                                });
+
+                                small_option.yAxis[0].scale=true;
+                            }else{
+                                small_option.series.push({
+                                    name: n,
+                                    type: 'bar',
+                                    itemStyle: {
+                                        normal: {
+                                            color: '#aab2cc'
+                                        },
+                                    },
+                                    data: [{
+                                        name:me.cn_name,
+                                        value:data['y'+me.small_id][i]
+                                    }],
+                                    silent:true,
+                                    barMaxWidth:'20%'
+                                });
+                                small_option.yAxis[0].scale=false;
+                            }
+                        });
+                    }
+                }
+//                console.log(small_option);
+                this.small_chart.clear();
+                this.small_chart.setOption(small_option,true);
+                this.small_chart.resize();
+            }
+        },
+        events:{
+            resize_overview_charts:function(){
+                var me=this;
+                if(this.small_chart&&!this.small_chart._disposed){
+                    setTimeout(function(){
+                        me.small_chart.resize();
+                    },0)
+                }
+            },
+            init_thumbnail:function(tab_name,data,unit){
+                this.small_chart = echarts.init(document.getElementById(this.small_id));
+                if(data){
+                    this.no_data=false;
+                    this.init_small(this.small_chart,this.thumbnail_default,data,unit);
+                }
+            },
+            cancel_thumbnail:function(){
+                this.no_data=true;
+                this.small_chart.clear();
+                this.small_chart.setOption({
+                    series:[]
+                },true);
+            },
+            change_legend_status:function(data){
+                console.log(data);
+                if(this.small_chart){
+                    var me = this,
+                        options = this.small_chart.getOption(),
+                        legends = options.legend[0].data;
+                    if(legends) {
+                        $.each(legends, function (i, n) {//关闭所有图例
+                            me.small_chart.dispatchAction({
+                                type: 'legendUnSelect',
+                                name: n
+                            })
+                        });
+                        if(data) {
+                            $.each(data,function(i,n){
+                                if(legends.indexOf(n.museum)!=-1){
+                                    me.small_chart.dispatchAction({
+                                        type: 'legendSelect',
+                                        name: n.museum
+                                    })
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        },
+        props:['small_id']//接收容器ID信息,
+    });
+</script>
