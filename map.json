@@ -1,0 +1,438 @@
+{
+    "mod": {
+        "deps": [],
+        "uri": "/js/mod.js"
+    },
+    "jquery": {
+        "deps": [],
+        "uri": "/js/jquery-1.10.2.min.js"
+    },
+    "$": {
+        "deps": [],
+        "uri": "/js/jquery-1.10.2.min.js"
+    },
+    "echarts": {
+        "deps": [],
+        "uri": "/js/echarts.js"
+    },
+    "dataTool": {
+        "deps": [],
+        "uri": "/js/dataTool.js"
+    },
+    "angular": {
+        "deps": [],
+        "uri": "/js/angular/angular.min.js"
+    },
+    "angular-route": {
+        "deps": [],
+        "uri": "/js/angular/angular-route.min.js"
+    },
+    "angular-animate": {
+        "deps": [],
+        "uri": "/js/angular/angular-animate.min.js"
+    },
+    "qrcode": {
+        "deps": [],
+        "uri": "/js/jquery.qrcode.min.js"
+    },
+    "mousewheel": {
+        "deps": [],
+        "uri": "/js/jquery.mousewheel.js"
+    },
+    "laydate": {
+        "deps": [],
+        "uri": "/js/laydate/laydate.js"
+    },
+    "_": {
+        "deps": [],
+        "uri": "/js/underscore-min.js"
+    },
+    "vue": {
+        "deps": [],
+        "uri": "/js/vue.js"
+    },
+    "vue-router": {
+        "deps": [],
+        "uri": "/js/vue-router.js"
+    },
+    "bootstrap": {
+        "deps": [],
+        "uri": "/js/bootstrap-3.3.5-dist/js/bootstrap.js"
+    },
+    "bootstrap.css": {
+        "deps": [],
+        "uri": "/js/bootstrap-3.3.5-dist/css/bootstrap.min.css"
+    },
+    "tooltip": {
+        "deps": [],
+        "uri": "/js/tooltip.js"
+    },
+    "semantic_ui.css": {
+        "deps": [],
+        "uri": "/js/Semantic-UI-CSS-master/semantic.css"
+    },
+    "semantic_ui": {
+        "deps": [],
+        "uri": "/js/Semantic-UI-CSS-master/semantic.js"
+    },
+    "lodash": {
+        "deps": [],
+        "uri": "/js/lodash.min.js"
+    },
+    "Sortable": {
+        "deps": [],
+        "uri": "/js/Sortable.min.js"
+    },
+    "vuedragablefor": {
+        "deps": [],
+        "uri": "/js/vuedragablefor.js"
+    },
+    "common/draw": {
+        "deps": [
+            "_",
+            "$"
+        ],
+        "uri": "common/draw.js"
+    },
+    "login/login.css": {
+        "deps": [],
+        "uri": "login/login.css"
+    },
+    "common/header": {
+        "deps": [
+            "common/css/header.css",
+            "$",
+            "vue"
+        ],
+        "uri": "common/header.js"
+    },
+    "common/css/font.css": {
+        "deps": [],
+        "uri": "common/css/font.css"
+    },
+    "common/left": {
+        "deps": [
+            "common/css/left.css"
+        ],
+        "uri": "common/left.js"
+    },
+    "common/css/header.css": {
+        "deps": [],
+        "uri": "common/css/header.css"
+    },
+    "common/router": {
+        "deps": [],
+        "uri": "common/router.js"
+    },
+    "common/css/left.css": {
+        "deps": [],
+        "uri": "common/css/left.css"
+    },
+    "common/win": {
+        "deps": [
+            "common/css/win.css",
+            "_",
+            "common/router"
+        ],
+        "uri": "common/win.js"
+    },
+    "common/css/win.css": {
+        "deps": [],
+        "uri": "common/css/win.css"
+    },
+    "login": {
+        "deps": [
+            "login/login.css",
+            "vue",
+            "jquery",
+            "qrcode"
+        ],
+        "uri": "login/login.js"
+    },
+    "common/detail/common.css": {
+        "deps": [],
+        "uri": "common/detail/common.css"
+    },
+    "regional_center/compare": {
+        "deps": [
+            "regional_center/css/compare.css"
+        ],
+        "uri": "regional_center/compare.js"
+    },
+    "common/floor_hall/index.css": {
+        "deps": [],
+        "uri": "common/floor_hall/index.css"
+    },
+    "regional_center/detail": {
+        "deps": [
+            "regional_center/css/detail.css"
+        ],
+        "uri": "regional_center/detail.js"
+    },
+    "common/nav/nav.css": {
+        "deps": [],
+        "uri": "common/nav/nav.css"
+    },
+    "regional_center/css/compare.css": {
+        "deps": [],
+        "uri": "regional_center/css/compare.css"
+    },
+    "regional_center/overview": {
+        "deps": [
+            "regional_center/css/overview.css"
+        ],
+        "uri": "regional_center/overview.js"
+    },
+    "regional_center/css/detail.css": {
+        "deps": [],
+        "uri": "regional_center/css/detail.css"
+    },
+    "regional_center": {
+        "deps": [
+            "regional_center/css/compare.css",
+            "regional_center/css/overview.css",
+            "regional_center/css/detail.css",
+            "common/css/header.css",
+            "$",
+            "vue",
+            "lodash",
+            "Sortable",
+            "vuedragablefor",
+            "vue-router",
+            "tooltip",
+            "echarts",
+            "laydate",
+            "semantic_ui",
+            "semantic_ui.css",
+            "regional_center/css/regional_center.css",
+            "common/header",
+            "regional_center/detail",
+            "regional_center/overview",
+            "regional_center/compare",
+            "regional_center/report"
+        ],
+        "uri": "regional_center/regional_center.js"
+    },
+    "regional_center/css/overview.css": {
+        "deps": [],
+        "uri": "regional_center/css/overview.css"
+    },
+    "regional_center/report": {
+        "deps": [],
+        "uri": "regional_center/report.js"
+    },
+    "regional_center/css/regional_center.css": {
+        "deps": [],
+        "uri": "regional_center/css/regional_center.css"
+    },
+    "common/detail/common": {
+        "deps": [
+            "common/detail/common.css",
+            "$",
+            "_",
+            "echarts",
+            "laydate",
+            "tooltip"
+        ],
+        "uri": "common/detail/common.js"
+    },
+    "common/floor_hall/index": {
+        "deps": [
+            "$",
+            "_",
+            "vue",
+            "echarts",
+            "bootstrap.css",
+            "bootstrap",
+            "common/floor_hall/index.css",
+            "common/css/font.css",
+            "tooltip",
+            "common/floor_hall/monitor",
+            "common/floor_hall/relic",
+            "common/floor_hall/net",
+            "common/floor_hall/map"
+        ],
+        "uri": "common/floor_hall/index.js"
+    },
+    "common/floor_hall/map": {
+        "deps": [
+            "$",
+            "_"
+        ],
+        "uri": "common/floor_hall/map.js"
+    },
+    "common/floor_hall/monitor": {
+        "deps": [
+            "$",
+            "vue",
+            "echarts"
+        ],
+        "uri": "common/floor_hall/monitor.js"
+    },
+    "common/floor_hall/net": {
+        "deps": [
+            "$",
+            "vue"
+        ],
+        "uri": "common/floor_hall/net.js"
+    },
+    "common/floor_hall/relic": {
+        "deps": [
+            "$",
+            "vue",
+            "_",
+            "echarts"
+        ],
+        "uri": "common/floor_hall/relic.js"
+    },
+    "common/nav/nav": {
+        "deps": [
+            "common/css/header.css",
+            "$",
+            "vue",
+            "_",
+            "common/nav/nav.css",
+            "common/header"
+        ],
+        "uri": "common/nav/nav.js"
+    },
+    "index.html": {
+        "deps": [],
+        "uri": "index.html"
+    },
+    "common/header.html": {
+        "deps": [],
+        "uri": "common/header.html"
+    },
+    "common/left.html": {
+        "deps": [],
+        "uri": "common/left.html"
+    },
+    "login/index.html": {
+        "deps": [
+            "login/login.css",
+            "vue",
+            "jquery",
+            "qrcode",
+            "mod",
+            "login"
+        ],
+        "uri": "login/index.html"
+    },
+    "regional_center/compare.html": {
+        "deps": [],
+        "uri": "regional_center/compare.html"
+    },
+    "regional_center/detail.html": {
+        "deps": [],
+        "uri": "regional_center/detail.html"
+    },
+    "regional_center/index.html": {
+        "deps": [
+            "regional_center/css/compare.css",
+            "regional_center/css/overview.css",
+            "regional_center/css/detail.css",
+            "common/css/header.css",
+            "$",
+            "vue",
+            "lodash",
+            "Sortable",
+            "vuedragablefor",
+            "vue-router",
+            "tooltip",
+            "echarts",
+            "laydate",
+            "semantic_ui",
+            "semantic_ui.css",
+            "regional_center/css/regional_center.css",
+            "common/header",
+            "regional_center/detail",
+            "regional_center/overview",
+            "regional_center/compare",
+            "regional_center/report",
+            "mod",
+            "regional_center"
+        ],
+        "uri": "regional_center/index.html"
+    },
+    "regional_center/overview.html": {
+        "deps": [],
+        "uri": "regional_center/overview.html"
+    },
+    "regional_center/report.html": {
+        "deps": [],
+        "uri": "regional_center/report.html"
+    },
+    "common/floor_hall/index.html": {
+        "deps": [],
+        "uri": "common/floor_hall/index.html"
+    },
+    "common/floor_hall/map_switch.html": {
+        "deps": [],
+        "uri": "common/floor_hall/map_switch.html"
+    },
+    "common/floor_hall/monitor.html": {
+        "deps": [],
+        "uri": "common/floor_hall/monitor.html"
+    },
+    "common/floor_hall/net.html": {
+        "deps": [],
+        "uri": "common/floor_hall/net.html"
+    },
+    "common/floor_hall/relic.html": {
+        "deps": [],
+        "uri": "common/floor_hall/relic.html"
+    },
+    "regional_center/template/bar_chart.html": {
+        "deps": [],
+        "uri": "regional_center/template/bar_chart.html"
+    },
+    "regional_center/template/bubble_tabs.html": {
+        "deps": [],
+        "uri": "regional_center/template/bubble_tabs.html"
+    },
+    "regional_center/template/cultural_relics_of_various_dynasties.html": {
+        "deps": [],
+        "uri": "regional_center/template/cultural_relics_of_various_dynasties.html"
+    },
+    "regional_center/template/env_tree_list.html": {
+        "deps": [],
+        "uri": "regional_center/template/env_tree_list.html"
+    },
+    "regional_center/template/fixed_top.html": {
+        "deps": [],
+        "uri": "regional_center/template/fixed_top.html"
+    },
+    "regional_center/template/map_chart.html": {
+        "deps": [],
+        "uri": "regional_center/template/map_chart.html"
+    },
+    "regional_center/template/pageList.html": {
+        "deps": [],
+        "uri": "regional_center/template/pageList.html"
+    },
+    "regional_center/template/pie_chart.html": {
+        "deps": [],
+        "uri": "regional_center/template/pie_chart.html"
+    },
+    "regional_center/template/radar_chart.html": {
+        "deps": [],
+        "uri": "regional_center/template/radar_chart.html"
+    },
+    "regional_center/template/stack_bar_chart.html": {
+        "deps": [],
+        "uri": "regional_center/template/stack_bar_chart.html"
+    },
+    "regional_center/template/statistical_echarts.html": {
+        "deps": [],
+        "uri": "regional_center/template/statistical_echarts.html"
+    },
+    "regional_center/template/thumbnail_chart.html": {
+        "deps": [],
+        "uri": "regional_center/template/thumbnail_chart.html"
+    },
+    "regional_center/template/timeBox.html": {
+        "deps": [],
+        "uri": "regional_center/template/timeBox.html"
+    }
+}

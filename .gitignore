@@ -20,5 +20,3 @@ dist/*
 node_modules/*
 *.rar
 *.zip
-
-map.json
